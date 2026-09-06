@@ -14,18 +14,25 @@ inte klarar.
 
 1. En person öppnar sidan och delar länken (knappen **Dela**).
 2. Alla fyra väljer namn och plats.
-3. Frågekorten läses från den fysiska spelasken — appen håller inga frågor.
-   Laget näst på tur läser, som reglerna säger. Appen visar vem det är.
-4. Rätt svar: tryck **Rätt** — pjäsen flyttas frågans poängvärde.
+3. Dra era kategoribrickor som vanligt och lägg in dem på brickan i appen,
+   så ser alla varandras.
+4. Spela på. Vid rätt svar väljer man antal steg och trycker **Flytta**.
 
-## Vad appen sköter
+## Vad appen sköter — och inte
 
-- Kategoribrickor: dras ur en gemensam påse, läggs i poängordning 1–4
-- ZWAP: byt två uppåtvända brickor var som helst på bordet
-- BEZZERWIZZER: två per omgång, 1- eller 3-poängsattack, alla utfall
-- Upploppet: en vunnen attack där kan knuffa försvararen bakåt i stället
-- Turordning, rundor och nya givar enligt reglerna
-- Delad Spotify Jam-länk
+Appen kör inte spelet. Ni drar brickorna ur påsen, ställer frågorna,
+håller reda på turordningen och bestämmer själva hur många steg ett
+svar var värt. Appen visar bara det ni annars inte kan se hos varandra:
+
+- **Brickan** — lägg in de fyra kategorier ni själva drog, i den ordning
+  ni valt. Plats 1 är värd 1 poäng, plats 4 är värd 4.
+- **Allas brickor** öppet, samtidigt, på varje telefon
+- **Pjäserna** på banan — du flyttar din egen, valfritt antal steg
+- **Vem som är där** just nu
+- En knackning på bordet, och en delad Spotify Jam-länk
+
+ZWAP och BEZZERWIZZER hanterar ni med de fysiska brickorna och rösten,
+precis som när ni sitter i samma rum.
 
 ## Teknik
 

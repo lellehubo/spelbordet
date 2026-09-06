@@ -6,46 +6,28 @@
 <title>Spelbordet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
 <style>
 /* ------------------------------------------------------------------
-   Palett tagen från spelbrädet: bottle green box, four pawn colours.
-   Sampled straight off the photo, then lifted in luminance for a phone
-   screen — the hues are the game's, the lightness is not.
+   Spelbordet — en delad yta, inte ett spel.
 
-   Single theme on purpose: a board is an object, not a document. It is
-   the same green in daylight as at midnight, and the evenings this gets
-   used are dark ones anyway.
+   Ni drar brickorna, ställer frågorna och flyttar pjäserna själva.
+   Appen gör bara det ett videosamtal inte klarar: visar allas brickor
+   och pjäser för alla, samtidigt.
+
+   Paletten är mätt ur ett foto av det fysiska brädet — flaskgrönt plus
+   de fyra pjäsfärgerna. Ett tema, medvetet: ett bräde är ett föremål
+   och har samma färg i dagsljus som på kvällen.
    ------------------------------------------------------------------ */
 :root{
   color-scheme:dark;
-
-  /* The green world. Everything neutral in the game leans green too —
-     its "black" bag samples #1A332F, its "white" cards #91A7A0. */
-  --bg:#071A12;         /* deeper than the box, so surfaces can sit on it */
-  --surface:#0D2A1D;    /* panels */
-  --surface-2:#143A28;  /* raised: chosen step, active chip */
-  --sunk:#0A2318;       /* the board's recess */
-  --line:#1E4A34;
-  --line-soft:#153524;
-
-  --ink:#E9F3ED;        /* 13.6:1 on surface */
-  --ink-soft:#AFC6BA;   /* 8.5:1 */
-  --ink-faint:#88A396;  /* 5.7:1 — the old faint token failed at 2.9 */
-
-  --brass:#D8B36B;      /* the gold foil on the lid */
-  --on-brass:#082014;
-
-  /* The four pawns. Hues straight from the photo — green H145,
-     pink H327, red H4, blue H213 — raised to 4.8-8:1 against both the
-     background and the board. */
-  --p1:#35C46E;
-  --p2:#EC5DA0;
-  --p3:#F0553F;
-  --p4:#4B9BE8;
-  --on-player:#062015;  /* dark text on every pawn: 4.96-7.57:1 */
-  --spotify:#1DB954;    /* their green, close enough to ours to sit well */
-
+  --bg:#071A12; --surface:#0D2A1D; --surface-2:#143A28; --sunk:#0A2318;
+  --line:#1E4A34; --line-soft:#153524;
+  --ink:#E9F3ED; --ink-soft:#AFC6BA; --ink-faint:#88A396;
+  --brass:#D8B36B; --on-brass:#082014;
+  --p1:#35C46E; --p2:#EC5DA0; --p3:#F0553F; --p4:#4B9BE8;
+  --on-player:#062015;
+  --spotify:#1DB954;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.8);
   --radius:14px;
   --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
@@ -62,15 +44,17 @@ body{
 button{font:inherit; color:inherit; cursor:pointer}
 h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 :focus-visible{outline:2px solid var(--brass); outline-offset:2px}
+[hidden]{display:none !important}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
 
 .app{
   max-width:520px; margin:0 auto; min-height:100svh;
-  display:flex; flex-direction:column; gap:12px;
+  display:flex; flex-direction:column; gap:10px;
   padding:0 14px calc(14px + env(safe-area-inset-bottom));
 }
 
 /* ---------- Topprad ---------- */
-.top{display:flex; align-items:center; gap:9px; padding:calc(10px + env(safe-area-inset-top)) 2px 0}
+.top{display:flex; align-items:center; gap:8px; padding:calc(10px + env(safe-area-inset-top)) 2px 0}
 .wordmark{font-family:var(--display); font-weight:800; font-size:19px; letter-spacing:-.02em; margin-right:auto}
 .wordmark span{color:var(--brass)}
 .roomchip{
@@ -81,11 +65,11 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .roomchip b{color:var(--ink); font-weight:500}
 .link-btn{
   background:var(--surface); border:1px solid var(--line); border-radius:9px;
-  padding:6px 11px; font-size:13px; font-weight:600; color:var(--ink-soft);
+  padding:8px 11px; font-size:13px; font-weight:600; color:var(--ink-soft);
 }
 .link-btn:active{background:var(--surface-2)}
 
-/* ---------- Jam-raden ---------- */
+/* ---------- Jam ---------- */
 .jam{
   display:flex; align-items:center; gap:8px; min-height:34px;
   background:var(--surface); border:1px solid var(--line-soft);
@@ -93,59 +77,39 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 }
 .jam-icon{color:var(--spotify); font-size:15px; flex:none; line-height:1}
 .jam-body{display:flex; align-items:center; gap:8px; flex:1; min-width:0}
-.jam-text{
-  flex:1; min-width:0; font-size:12.5px; color:var(--ink-soft);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
+.jam-text{flex:1; min-width:0; font-size:12.5px; color:var(--ink-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .jam-text b{color:var(--ink)}
 .jam-act{
   flex:none; min-height:30px; padding:0 12px; border-radius:8px;
   border:1px solid var(--spotify); background:transparent; color:var(--spotify);
   font-size:12.5px; font-weight:700; white-space:nowrap;
 }
-.jam-act.filled{background:var(--spotify); color:#06210F; border-color:var(--spotify)}
+.jam-act.filled{background:var(--spotify); color:#06210F}
 .jam-act.quiet{border-color:var(--line); color:var(--ink-faint); font-weight:600}
 .jam input{
   flex:1; min-width:0; font:inherit; font-size:16px; padding:7px 9px;
-  border-radius:8px; border:1px solid var(--line);
-  background:var(--sunk); color:var(--ink);
-}
-.jam-hint{
-  margin:0; font-size:11px; color:var(--ink-faint); line-height:1.35;
-  padding:0 2px 2px;
+  border-radius:8px; border:1px solid var(--line); background:var(--sunk); color:var(--ink);
 }
 
-/* ---------- Närvarorad ---------- */
-/* One row per team, not four columns: four category names have to be
-   readable side by side, and in columns they came out as "P…" "V…". */
+/* ---------- Lagen ---------- */
 .seats{display:flex; flex-direction:column; gap:5px}
 .seat{
   position:relative; background:var(--surface);
   border:1px solid var(--line-soft); border-radius:11px;
-  padding:6px 9px; min-height:0;
-  display:flex; flex-direction:row; align-items:center; gap:8px;
-  text-align:left; transition:background .2s, border-color .2s;
+  padding:6px 9px; display:flex; align-items:center; gap:8px;
 }
-.seat-id{flex:none; width:74px; min-width:0}
-.seat.empty{background:transparent; border-style:dashed; border-color:var(--line)}
-.seat.me::after{
-  content:""; position:absolute; inset:-1px; border-radius:12px;
-  border:2px solid var(--seat-color); pointer-events:none;
-}
-.seat.turn{background:var(--surface-2); box-shadow:inset 3px 0 0 var(--brass)}
-/* Empty seats say what they are and stop taking a player's worth of room. */
-.seat.empty{min-height:34px; opacity:.75}
+.seat.empty{background:transparent; border-style:dashed; border-color:var(--line); opacity:.7}
+.seat.me{border-color:var(--seat-color)}
+.seat.stale{opacity:.5}
 .seat-dot{
-  position:relative;
-  width:26px; height:26px; border-radius:50%; background:var(--seat-color);
-  flex:none; display:grid; place-items:center;
+  position:relative; width:26px; height:26px; border-radius:50%;
+  background:var(--seat-color); flex:none; display:grid; place-items:center;
   font-family:var(--display); font-weight:700; font-size:13px; color:var(--on-player);
   box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);
 }
-
-/* Colour alone must not say who is who — the four pawn hues sit at
-   1.1-1.5:1 from each other, and closer still under deuteranopia. Two
-   shapes x two ring states give four marks that hold up in greyscale. */
+/* Färg räcker inte som identitet — de fyra ligger nära varandra i
+   luminans, och närmare än så vid färgblindhet. Två former × två
+   ringlägen ger fyra märken som håller även i gråskala. */
 [data-seat="p2"] .seat-dot, .pawn[data-seat="p2"],
 [data-seat="p4"] .seat-dot, .pawn[data-seat="p4"]{border-radius:7px}
 [data-seat="p3"] .seat-dot::before, .pawn[data-seat="p3"]::before,
@@ -154,20 +118,18 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   border:1.5px solid var(--on-player); opacity:.5; pointer-events:none;
 }
 .seat.empty .seat-dot{background:transparent; border:1.5px dashed var(--line); color:var(--ink-faint); box-shadow:none}
-.seat-name{
-  font-size:12px; font-weight:600; line-height:1.2; width:100%;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
+.seat-id{flex:none; width:74px; min-width:0}
+.seat-name{font-size:12px; font-weight:600; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .seat.empty .seat-name{color:var(--ink-faint); font-weight:500}
 .seat-pos{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); font-variant-numeric:tabular-nums}
-.live-dot{position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--p1)}
-.seat.stale .live-dot{background:var(--ink-faint); opacity:.45}
-/* The brass edge on .seat.turn carries this visually; the label stays
-   for screen readers, which get nothing from a box-shadow. */
-.turn-flag{
-  position:absolute; width:1px; height:1px; overflow:hidden;
-  clip-path:inset(50%); white-space:nowrap;
+.mini{display:grid; grid-template-columns:repeat(4,1fr); gap:3px; flex:1; min-width:0}
+.mini span{
+  font-size:9.5px; line-height:1.15; padding:5px 3px; border-radius:5px;
+  background:var(--surface-2); color:var(--ink-soft); text-align:center;
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
 }
+.mini span.tom{background:transparent; border:1px dashed var(--line-soft); color:var(--ink-faint)}
+
 @keyframes knock{
   0%,100%{transform:translate(0,0)} 20%{transform:translate(-3px,1px)}
   40%{transform:translate(3px,-1px)} 60%{transform:translate(-2px,0)} 80%{transform:translate(2px,0)}
@@ -175,69 +137,37 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .knocking{animation:knock .38s ease}
 
 /* ---------- Banan ---------- */
-/* The board is recessed, like the real one — a surface you look down
-   into, not another card stacked on the pile. */
 .board-wrap{
   position:relative; background:var(--sunk); border:1px solid #061710;
   border-radius:var(--radius); padding:9px;
   box-shadow:inset 0 2px 8px rgba(0,0,0,.45);
 }
-.sr-only{
-  position:absolute; width:1px; height:1px; overflow:hidden;
-  clip-path:inset(50%); white-space:nowrap;
-}
 .board{
   position:relative; display:grid;
   grid-template-columns:repeat(6,1fr); grid-template-rows:repeat(6,1fr);
-  /* Scales with the screen: on a short phone the ring gives way rather
-     than pushing the start and goal squares behind the sticky panel. */
-  gap:3px; aspect-ratio:1; max-width:min(280px, 21vh); margin:0 auto;
+  gap:3px; aspect-ratio:1; max-width:min(280px, 24vh); margin:0 auto;
 }
-/* The free middle carries the state of play: round, point level, whose
-   turn, who reads. On the printed board this is where the logo sits. */
-.board-center{
-  grid-area:2/2/6/6; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:2px;
-  text-align:center; padding:6px; min-width:0;
-}
-.bc-round{
-  font-family:var(--mono); font-size:10px; color:var(--ink-faint);
-  letter-spacing:.08em; text-transform:uppercase;
-}
-.bc-level{
-  font-family:var(--display); font-weight:800; font-size:30px;
-  line-height:1; color:var(--brass); letter-spacing:-.02em;
-}
-.bc-level small{display:block; font-size:9.5px; letter-spacing:.12em; font-weight:700}
-.bc-turn{
-  font-size:12.5px; font-weight:700; color:var(--ink);
-  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.bc-reader{font-size:10.5px; color:var(--ink-soft)}
-/* Squares read as outlines on the board, the way the printed ones do —
-   the old fill sat 1.05:1 from its own board and was invisible. */
 .cell{
   border-radius:7px; background:rgba(255,255,255,.022);
   border:1px solid var(--line); display:grid; place-items:center;
-  font-family:var(--mono); font-size:9.5px;
-  color:var(--ink-soft); font-variant-numeric:tabular-nums;
+  font-family:var(--mono); font-size:9.5px; color:var(--ink-soft);
+  font-variant-numeric:tabular-nums;
 }
-/* The home stretch is dotted on the real board — same idea here. */
 .cell.stretch{position:relative; border-color:#3A7A57}
 .cell.stretch::after{
-  content:""; position:absolute; bottom:4px; left:50%; margin-left:-2px;
-  width:4px; height:4px; border-radius:50%; background:var(--ink-soft); opacity:.75;
+  content:""; position:absolute; bottom:3px; left:50%; margin-left:-2px;
+  width:4px; height:4px; border-radius:50%; background:var(--ink-soft); opacity:.7;
 }
-.cell.start-cell{
-  background:var(--surface-2); border-color:#2A6046;
-  font-size:8px; letter-spacing:.06em; color:var(--ink-faint);
+.cell.start-cell{background:var(--surface-2); border-color:#2A6046; font-size:7.5px; color:var(--ink-faint)}
+.cell.goal-cell{background:var(--brass); border-color:var(--brass); color:var(--on-brass); font-size:8px}
+.board-center{
+  grid-area:2/2/6/6; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; padding:6px;
 }
-.cell.goal-cell{
-  background:var(--brass); border-color:var(--brass);
-  color:var(--on-brass); font-weight:500; font-size:9px; letter-spacing:.04em;
+.bc-mark{
+  font-family:var(--display); font-weight:800; font-size:13px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--brass); opacity:.5;
 }
-/* Sits inside .board (appended by buildBoard) so pawn coordinates and
-   cell coordinates share one origin. */
 .pawns{position:absolute; inset:0; pointer-events:none}
 .pawn{
   position:absolute; top:0; left:0; width:22px; height:22px; border-radius:50%;
@@ -251,25 +181,16 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .pawn.moved{animation:pawnpop .6s ease}
 @keyframes pawnpop{0%{filter:brightness(1)} 30%{filter:brightness(1.55)} 100%{filter:brightness(1)}}
 
-/* ---------- Aktivitet ---------- */
-/* A strip, not a card — it must not compete with the board for height
-   now that the panel is sticky. Newest line sits on top. */
+/* ---------- Flödet ---------- */
 .feed{
   background:transparent; border:none; padding:0 4px;
   min-height:20px; max-height:38px; overflow-y:auto;
   display:flex; flex-direction:column; gap:4px;
 }
-.feed-line{font-size:12.5px; color:var(--ink-soft); display:flex; gap:7px; align-items:baseline}
-.feed-line time{
-  font-family:var(--mono); font-size:10.5px; color:var(--ink-faint);
-  flex:none; font-variant-numeric:tabular-nums;
-}
-.feed-line b{color:var(--ink); font-weight:600}
-.feed-empty{margin:0; font-size:12.5px; color:var(--ink-faint); font-style:italic}
+.feed p{margin:0; font-size:12.5px; color:var(--ink-soft)}
+.feed b{color:var(--ink); font-weight:600}
 
 /* ---------- Min panel ---------- */
-/* Sticky: the panel you touch all evening must never sit below the
-   fold, whatever height the phone is. */
 .mine{
   margin-top:auto; position:sticky; bottom:0; z-index:5;
   background:var(--surface);
@@ -277,7 +198,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   border-radius:var(--radius);
   padding:11px 12px calc(11px + env(safe-area-inset-bottom));
   box-shadow:var(--shadow);
-  display:flex; flex-direction:column; gap:8px;
+  display:flex; flex-direction:column; gap:9px;
 }
 .mine-head{display:flex; align-items:center; gap:9px}
 .mine-head .seat-dot{width:30px; height:30px; font-size:14px}
@@ -287,16 +208,9 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   line-height:1.15; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .mine-id small{font-family:var(--mono); font-size:11px; color:var(--ink-faint)}
-.turn-state{
-  font-family:var(--display); font-weight:700; font-size:11px;
-  letter-spacing:.07em; text-transform:uppercase; white-space:nowrap;
-  padding:5px 10px; border-radius:20px; background:var(--surface-2); color:var(--ink-soft);
-}
-.turn-state.active{background:var(--brass); color:var(--on-brass)}
 
-/* ---------- Brickplattan: spelets kärna ---------- */
-.plate-hint{margin:0; font-size:11.5px; color:var(--brass)}
-.plate-hint[hidden]{display:none}
+/* Brickan: fyra platser för kategorierna ni själva drog ur påsen.
+   Plats 1 är värd 1 poäng, plats 4 är värd 4 — som på den riktiga. */
 .plate{display:grid; grid-template-columns:repeat(4,1fr); gap:6px}
 .tile{
   position:relative; min-height:62px; padding:16px 4px 6px;
@@ -304,86 +218,44 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   background:var(--surface-2); color:var(--ink);
   font-size:11px; font-weight:600; line-height:1.15; text-align:center;
   display:flex; align-items:center; justify-content:center;
-  transition:transform .12s, border-color .15s, opacity .2s;
-  overflow:hidden; hyphens:auto;
+  transition:transform .12s, border-color .15s; overflow:hidden; hyphens:auto;
 }
-/* The point value is the slot, not the tile — position 1 is worth 1. */
 .tile::before{
   content:attr(data-points); position:absolute; top:4px; left:0; right:0;
-  font-family:var(--mono); font-size:10px; color:var(--brass);
-  letter-spacing:.04em;
+  font-family:var(--mono); font-size:10px; color:var(--brass); letter-spacing:.04em;
 }
+.tile.tom{background:transparent; border-style:dashed; color:var(--ink-faint); font-weight:500}
 .tile[aria-pressed="true"]{border-color:var(--brass); transform:translateY(-2px)}
-.tile.done{opacity:.4; background:transparent; border-style:dashed}
-.tile.done::after{
-  content:"✓"; position:absolute; right:5px; bottom:3px;
-  font-size:11px; color:var(--ink-faint);
-}
-.tile.current{border-color:var(--my-color); box-shadow:0 0 0 1px var(--my-color)}
 .tile:active{transform:scale(.96)}
 
-/* ZWAP och BEZZERWIZZER — spelets två taktikbrickor */
-.specials{display:flex; gap:6px}
-.special{
-  flex:1; min-height:36px; border-radius:10px;
-  border:1.5px solid var(--line); background:transparent;
-  font-family:var(--display); font-weight:700; font-size:11.5px;
-  letter-spacing:.06em; color:var(--ink-soft);
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  transition:transform .1s, border-color .15s, color .15s;
+.picker{
+  border:1px solid var(--line); border-radius:11px; padding:9px;
+  background:var(--sunk); display:flex; flex-direction:column; gap:8px;
 }
-.special:not(:disabled){border-color:var(--brass); color:var(--brass)}
-.special:disabled{opacity:.32}
-.special.armed{background:var(--brass); color:var(--on-brass); border-color:var(--brass)}
-.special:active:not(:disabled){transform:scale(.97)}
-.special b{font-family:var(--mono); font-weight:500; font-size:11px}
-
-.attack-box{
-  border:1.5px solid var(--p3); border-radius:11px;
-  padding:10px 11px; background:var(--surface-2);
-  display:flex; flex-direction:column; gap:9px;
+.picker-head{display:flex; align-items:center; gap:8px}
+.picker-head p{margin:0; flex:1; font-size:12.5px; color:var(--ink-soft)}
+.picker-head b{color:var(--brass)}
+.picker-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; max-height:172px; overflow-y:auto}
+.picker-grid button{
+  min-height:38px; padding:4px 3px; border-radius:7px;
+  border:1px solid var(--line-soft); background:var(--surface);
+  font-size:10.5px; font-weight:600; line-height:1.15; color:var(--ink);
 }
-.attack-title{margin:0; font-size:13.5px; line-height:1.35}
-.attack-title b{color:var(--ink)}
-.attack-actions{display:flex; flex-direction:column; gap:6px}
-.attack-actions button{
-  min-height:42px; border-radius:9px; border:1px solid var(--line);
-  background:var(--surface); color:var(--ink);
-  font-size:13.5px; font-weight:600; text-align:left; padding:0 12px;
-}
-.attack-actions button.win{border-color:var(--p1); color:var(--p1)}
-.attack-actions button.lose{border-color:var(--p3); color:var(--p3)}
-
-.finish-box{
-  border:1.5px solid var(--brass); border-radius:11px;
-  padding:11px 12px; background:var(--surface-2);
-  display:flex; flex-direction:column; gap:8px;
-}
-.finish-title{
-  margin:0; font-family:var(--display); font-weight:800; font-size:17px;
-  color:var(--brass); line-height:1.2;
-}
-.finish-note{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.4}
-.finish-box button{
-  min-height:44px; border-radius:10px; border:none;
-  background:var(--brass); color:var(--on-brass);
-  font-weight:700; font-size:14.5px;
+.picker-grid button:disabled{opacity:.3}
+.quiet{
+  min-height:36px; border-radius:8px; border:1px solid var(--line);
+  background:transparent; color:var(--ink-faint); font-size:12.5px; font-weight:600;
 }
 
-/* Bricka valbar under en ZWAP */
-.tile.zwapable{border-color:var(--brass); border-style:dashed}
-.mini span.zwapable{outline:1.5px dashed var(--brass); outline-offset:-1px; cursor:pointer}
-
-/* De andra lagens brickor — läsbara, inte rörbara */
-.mini{display:grid; grid-template-columns:repeat(4,1fr); gap:3px; flex:1; min-width:0}
-.mini span{
-  position:relative; font-size:9.5px; line-height:1.15;
-  padding:5px 3px 5px; border-radius:5px;
-  background:var(--surface-2); color:var(--ink-soft);
-  overflow:hidden; white-space:nowrap; text-overflow:ellipsis; text-align:center;
+.steps{display:flex; gap:6px; align-items:center}
+.steps-label{font-size:11.5px; color:var(--ink-faint); flex:none}
+.step{
+  flex:1; min-height:44px; border-radius:10px; border:1px solid var(--line);
+  background:var(--surface-2); font-family:var(--display); font-weight:700;
+  font-size:16px; font-variant-numeric:tabular-nums; transition:transform .1s, background .15s;
 }
-.mini span.done{opacity:.35; text-decoration:line-through}
-.mini span.now{background:var(--brass); color:var(--on-brass); font-weight:700}
+.step[aria-pressed="true"]{background:var(--my-color); border-color:var(--my-color); color:var(--on-player)}
+.step:active{transform:scale(.94)}
 
 .actions{display:flex; gap:8px}
 .btn{
@@ -397,16 +269,16 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .btn-primary{flex:1; background:var(--my-color,var(--ink)); border-color:transparent; color:var(--on-player); font-weight:700}
 .btn-ghost{flex:none; width:52px; font-size:19px; padding:13px 0}
 
-/* Handing over the turn happens every single round — it gets a real
-   button, not a footnote. Lights up in brass when it is your turn. */
-.btn-pass{
-  width:100%; min-height:44px; background:transparent;
-  border:1.5px solid var(--line); color:var(--ink-soft); font-weight:700;
-  font-size:15px; border-radius:11px;
+.mine-foot{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.conn{display:flex; align-items:center; gap:5px; font-family:var(--mono); font-size:11px; color:var(--ink-faint)}
+.conn i{width:6px; height:6px; border-radius:50%; background:var(--ink-faint); display:block; flex:none}
+.conn.up i{background:var(--p1)}
+.conn.down i{background:var(--p3)}
+.reset-btn{
+  background:none; border:none; padding:4px 0; font-size:11.5px;
+  color:var(--ink-faint); text-decoration:underline; text-underline-offset:2px;
 }
-.btn-pass.ready{border-color:var(--brass); color:var(--brass)}
 
-.mine-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:11.5px}
 .seatless-note{
   margin:0; font-size:13.5px; line-height:1.4; color:var(--ink);
   background:var(--surface-2); border:1px solid var(--line);
@@ -417,10 +289,6 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   border-radius:10px; border:1.5px solid var(--brass);
   background:transparent; color:var(--brass); font-weight:700; font-size:14.5px;
 }
-.conn{display:flex; align-items:center; gap:5px; font-family:var(--mono); font-size:11px; color:var(--ink-faint)}
-.conn i{width:6px; height:6px; border-radius:50%; background:var(--ink-faint); display:block; flex:none}
-.conn.up i{background:var(--p1)}
-.conn.down i{background:var(--p3)}
 
 /* ---------- Lobby ---------- */
 .lobby{
@@ -447,16 +315,11 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   border-radius:12px; border:1.5px solid var(--line); background:var(--surface);
   padding:12px 4px 10px; min-height:88px;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  transition:border-color .15s, transform .1s;
 }
 .pick button .seat-dot{width:30px; height:30px; font-size:14px}
-.pick button span{
-  font-size:11px; color:var(--ink-faint); font-weight:600; line-height:1.15;
-  text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
+.pick button span{font-size:11px; color:var(--ink-faint); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%}
 .pick button[aria-pressed="true"]{border-color:var(--seat-color)}
-.pick button:disabled{opacity:.42; cursor:not-allowed}
-.pick button:active:not(:disabled){transform:scale(.96)}
+.pick button:disabled{opacity:.42}
 .lobby .btn-primary{--my-color:var(--brass); color:var(--on-brass); padding:15px; font-size:16px}
 .lobby-note{font-size:12px; color:var(--ink-faint); line-height:1.5; margin:0}
 
@@ -469,7 +332,6 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 }
 .toast.show{opacity:1; transform:translate(-50%,0)}
 
-[hidden]{display:none !important}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms !important; transition-duration:.01ms !important}
 }
@@ -482,7 +344,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     <div class="wordmark">Spel<span>bordet</span></div>
     <div class="roomchip">rum <b id="roomLabel">—</b></div>
     <button class="link-btn" id="shareBtn">Dela</button>
-    <button class="link-btn" id="leaveBtn" aria-label="Lämna bordet">Lämna</button>
+    <button class="link-btn" id="leaveBtn">Lämna</button>
   </div>
 
   <div class="jam" id="jamBar">
@@ -498,9 +360,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     <div class="pawns" id="pawns"></div>
   </div>
 
-  <div class="feed" id="feed">
-    <p class="feed-empty" id="feedEmpty">Det som händer vid bordet dyker upp här.</p>
-  </div>
+  <div class="feed" id="feed"></div>
 
   <section class="mine" id="mine">
     <div class="mine-head">
@@ -509,35 +369,32 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         <strong id="myName">—</strong>
         <small id="myPos">på startrutan</small>
       </div>
-      <div class="turn-state" id="turnState">väntar</div>
     </div>
 
-    <p class="plate-hint" id="plateHint">Tryck på två brickor för att byta plats på dem.</p>
-    <div class="plate" id="plate" role="group" aria-label="Dina kategoribrickor"></div>
+    <div class="plate" id="plate" role="group" aria-label="Din bricka"></div>
 
-    <div class="specials" id="specials">
-      <button class="special" id="zwapBtn">ZWAP</button>
-      <button class="special" id="bezzerBtn">BEZZERWIZZER <b id="bezzerCount">2</b></button>
+    <div class="picker" id="picker" hidden>
+      <div class="picker-head">
+        <p>Vad la du på <b id="pickerSlot">plats 1</b>?</p>
+        <button class="quiet" id="pickerClose" style="padding:0 12px">Stäng</button>
+      </div>
+      <div class="picker-grid" id="pickerGrid"></div>
+      <button class="quiet" id="pickerClear">Töm platsen</button>
     </div>
 
-    <div class="attack-box" id="attackBox" hidden>
-      <p class="attack-title" id="attackTitle"></p>
-      <div class="attack-actions" id="attackActions"></div>
-    </div>
-
-    <div class="finish-box" id="finishBox" hidden>
-      <p class="finish-title" id="finishTitle"></p>
-      <p class="finish-note">Spela klart rundan så alla lag fått lika många frågor.</p>
-      <button id="restartBtn">Ny omgång</button>
+    <div class="steps" id="steps" role="group" aria-label="Antal steg">
+      <span class="steps-label">Steg</span>
+      <button class="step" data-step="1" aria-pressed="true">1</button>
+      <button class="step" data-step="2" aria-pressed="false">2</button>
+      <button class="step" data-step="3" aria-pressed="false">3</button>
+      <button class="step" data-step="4" aria-pressed="false">4</button>
     </div>
 
     <div class="actions">
       <button class="btn btn-ghost" id="backBtn" aria-label="Ett steg tillbaka">&minus;</button>
-      <button class="btn btn-primary" id="moveBtn">Rätt svar</button>
+      <button class="btn btn-primary" id="moveBtn">Flytta 1 steg</button>
       <button class="btn btn-ghost" id="knockBtn" aria-label="Knacka på bordet">&#9995;</button>
     </div>
-
-    <button class="btn btn-pass" id="passBtn">Lämna över turen &rarr;</button>
 
     <p class="seatless-note" id="seatlessNote" hidden>
       Bordet är fullt — någon annan tog din plats.
@@ -546,6 +403,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
     <div class="mine-foot">
       <div class="conn" id="conn"><i></i><span>ansluter…</span></div>
+      <button class="reset-btn" id="resetBtn">Nollställ bordet</button>
     </div>
   </section>
 </div>
@@ -556,22 +414,18 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       <h1>Ta plats vid <span>bordet</span></h1>
       <p class="lede">Fyra telefoner, en länk. Spelplanen är gemensam, panelen längst ner är din.</p>
     </div>
-
     <div class="field">
       <label for="nameInput">Ditt namn</label>
       <input id="nameInput" type="text" maxlength="14" autocomplete="given-name" placeholder="Lelle" enterkeyhint="done">
     </div>
-
     <div class="field">
       <label for="codeInput">Rumskod</label>
       <input id="codeInput" type="text" maxlength="6" class="code" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done">
     </div>
-
     <div class="field">
       <div class="lbl">Välj plats</div>
       <div class="pick" id="pick"></div>
     </div>
-
     <button class="btn btn-primary" id="joinBtn">Sätt dig</button>
     <p class="lobby-note" id="lobbyNote">Alla som öppnar länken med samma rumskod hamnar vid samma bord.</p>
   </div>
@@ -584,23 +438,22 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 (function () {
   "use strict";
 
-  // The anon key is public by design and guards nothing here: this app
-  // uses Realtime presence/broadcast only — no tables, no rows, no reads.
+  // Anon-nyckeln är publik by design och skyddar ingenting här: appen rör
+  // inga tabeller, bara Realtime-kanaler.
   var SUPABASE_URL = "https://cntmgjiomjjivdngnqui.supabase.co";
   var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNudG1namlvbWpqaXZkbmducXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODEyNzQsImV4cCI6MjA1NjY1NzI3NH0.NBq5QNxGbYAeHrwRf99B1hBN9NvG4bhVOSlErDTbNvQ";
 
   var CELLS = 20;
-  var HOME_STRETCH = 15;   // fields 15-19 are the run-in to the goal
+  var HOME_STRETCH = 15;     // upploppet, prickmarkerat som på brädet
+  var RING = 6;
   var SEATS = [
     { key: "p1", label: "plats 1", varName: "--p1" },
     { key: "p2", label: "plats 2", varName: "--p2" },
     { key: "p3", label: "plats 3", varName: "--p3" },
     { key: "p4", label: "plats 4", varName: "--p4" }
   ];
-  // Dim after 12s of silence, drop only after 90s. The old pair (45s
-  // stale / 20s gone) meant the dimming could never happen — a quiet
-  // phone went straight from "here" to "seat empty" mid-game.
-  // The 20 categories that go in the bag.
+
+  // Bara namnen. Appen delar inte ut dem — ni drar dem ur påsen.
   var CATEGORIES = [
     "Arkitektur", "Konst och scen", "Näringsliv", "Samhälle", "Design",
     "Film", "Mat och dryck", "Geografi", "Historia", "Människan",
@@ -608,39 +461,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     "Vetenskap", "Sport och spel", "Teknik", "Traditioner och tro", "TV och radio"
   ];
 
-  // The bag is dealt from a seed both the room code and the round number
-  // feed, so every phone deals the identical hand without anyone having
-  // to agree on it. No message, no arbitration, no drift.
-  function seeded(str) {
-    var h = 2166136261;
-    for (var i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = (h * 16777619) >>> 0;
-    }
-    return function () {
-      h ^= h << 13; h >>>= 0;
-      h ^= h >> 17;
-      h ^= h << 5;  h >>>= 0;
-      return h / 4294967296;
-    };
-  }
-
-  // Deals category INDICES, not names: a tile has to be able to move to
-  // another team's plate (that is what ZWAP does), so a slot holds the
-  // category itself rather than a position in its own team's hand.
-  function dealRound(room, round) {
-    var rnd = seeded(room + ":" + round);
-    var bag = CATEGORIES.map(function (_, i) { return i; });
-    for (var i = bag.length - 1; i > 0; i--) {      // Fisher-Yates
-      var j = Math.floor(rnd() * (i + 1));
-      var t = bag[i]; bag[i] = bag[j]; bag[j] = t;
-    }
-    var hands = {};
-    SEATS.forEach(function (s, i) { hands[s.key] = bag.slice(i * 4, i * 4 + 4); });
-    return hands;
-  }
-
-  var STALE_MS = 12000;
+  var STALE_MS = 12000, GONE_MS = 90000;
 
   function $(id) { return document.getElementById(id); }
   function esc(s) {
@@ -648,21 +469,15 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
-
-  // Storage throws outright in some privacy modes. Nothing here is
-  // worth losing the whole evening over, so every read and write is
-  // allowed to fail quietly.
   function store(area, key, value) {
     try {
       var s = window[area];
       if (arguments.length < 3) return s.getItem(key);
       s.setItem(key, value);
-    } catch (e) { /* blocked — carry on without it */ }
+    } catch (e) { /* privat läge — strunt i det */ }
     return null;
   }
 
-  // One peer = one open tab. Kept in sessionStorage so a reload
-  // reclaims the same seat instead of orphaning it.
   var peerId = store("sessionStorage", "spelbordet.peer");
   if (!peerId) {
     peerId = Math.random().toString(36).slice(2, 10);
@@ -670,74 +485,36 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   }
 
   var state = {
-    room: "", name: "", seat: null,
-    since: 0,          // when I claimed my seat — decides seat conflicts
+    room: "", name: "", seat: null, since: 0,
     pos: 0,
-    tiles: [0, 1, 2, 3],              // category index on each point slot
-    done: [false, false, false, false],
-    dealt: -1,                        // round my tiles were dealt for
-    zwap: true,                       // ZWAP still unspent this round
-    bezzers: 2,                       // BEZZERWIZZER tiles left this round
-    attack: null,                     // my live attack, seen by everyone
-    epoch: 0,                         // bumped on restart so turn can go back to 0
-    jam: null,                        // shared Spotify Jam link, if I set it
-    turn: 0,          // monotonic; whose turn = SEATS[turn % 4]
-    step: 3,
-    peers: {},        // seatKey -> presence payload
-    channel: null, connected: false, joined: false
+    tiles: [null, null, null, null],   // kategoriindex per poängplats
+    step: 1,
+    jam: null,
+    peers: {}, channel: null, connected: false, joined: false
   };
 
   function seatIndex(key) {
     for (var i = 0; i < SEATS.length; i++) if (SEATS[i].key === key) return i;
     return -1;
   }
-  function occupiedSeats() {
-    return SEATS.filter(function (s) { return state.peers[s.key]; });
-  }
-
-  // Everything about whose turn it is follows from one counter. Teams
-  // answer their 1-point question clockwise, then all the 2-pointers,
-  // and so on; after four questions each, a new round is dealt and the
-  // right to start moves one seat clockwise.
-  function turnInfo() {
-    var occ = occupiedSeats();
-    var n = occ.length || 1;
-    var perRound = 4 * n;
-    var round = Math.floor(state.turn / perRound);
-    var within = state.turn % perRound;
-    var idx = (within % n + round) % n;
-    return {
-      round: round,
-      level: Math.floor(within / n) + 1,          // the question's point value
-      active: occ[idx] ? occ[idx].key : null,
-      reader: occ[(idx + 1) % n] ? occ[(idx + 1) % n].key : null,
-      teams: n
-    };
-  }
-
   function firstFree(taken) {
     for (var i = 0; i < SEATS.length; i++) if (!taken[SEATS[i].key]) return SEATS[i];
     return null;
   }
 
   // ---------------------------------------------------------------
-  // Board: 20 cells laid out serpentine. Pawns live on an overlay
-  // layer so a move glides across cells instead of jumping.
+  // Banan: 20 fält på ytterkanten av ett 6x6-rutnät, medurs från nedre
+  // vänstra hörnet — samma form som det tryckta brädet.
   // ---------------------------------------------------------------
   var boardEl = $("board"), pawnsEl = $("pawns"), cellEls = [];
 
-  // The 20 fields sit on the rim of a 6x6 grid, running clockwise from
-  // the bottom-left corner — the shape the printed board actually has.
-  // Going round is self-explanatory in a way a serpentine never is, and
-  // it leaves the middle free for the state of play.
-  var RING = 6;
   function ringCells() {
     var out = [], n = RING, r, c;
-    for (r = n - 1; r >= 0; r--) out.push([r, 0]);        // up the left side
-    for (c = 1; c < n; c++) out.push([0, c]);             // across the top
-    for (r = 1; r < n; r++) out.push([r, n - 1]);         // down the right
-    for (c = n - 2; c >= 1; c--) out.push([n - 1, c]);    // back along the bottom
-    return out;                                           // 6 + 5 + 5 + 4 = 20
+    for (r = n - 1; r >= 0; r--) out.push([r, 0]);
+    for (c = 1; c < n; c++) out.push([0, c]);
+    for (r = 1; r < n; r++) out.push([r, n - 1]);
+    for (c = n - 2; c >= 1; c--) out.push([n - 1, c]);
+    return out;
   }
 
   function buildBoard() {
@@ -751,8 +528,6 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       if (n === CELLS) { d.className += " goal-cell"; d.textContent = "MÅL"; }
       else if (n === 1) { d.className += " start-cell"; d.textContent = "START"; }
       else { d.textContent = String(n); }
-      // The home stretch — the white-dotted run where a won attack may
-      // push the defender backwards instead of paying the attacker.
       if (n >= HOME_STRETCH && n < CELLS) d.className += " stretch";
       d.style.gridRow = String(spots[i][0] + 1);
       d.style.gridColumn = String(spots[i][1] + 1);
@@ -761,29 +536,29 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     }
     var mid = document.createElement("div");
     mid.className = "board-center";
-    mid.id = "boardCenter";
+    var mark = document.createElement("div");
+    mark.className = "bc-mark";
+    mark.textContent = "Spelbordet";
+    mid.appendChild(mark);
     boardEl.appendChild(mid);
-    boardEl.appendChild(pawnsEl);  // absolute, so it takes no grid slot
+    boardEl.appendChild(pawnsEl);
   }
 
   function pawnXY(index, laneCount, lane) {
-    // index 0 = start pocket (bottom of cell 1); 1..20 sit on their cell.
     var target = cellEls[Math.max(0, Math.min(CELLS, index) - 1)] || cellEls[0];
     if (!target) return { x: 0, y: 0 };
     var bb = boardEl.getBoundingClientRect();
     var cb = target.getBoundingClientRect();
     var cx = cb.left - bb.left + cb.width / 2;
     var cy = cb.top - bb.top + cb.height / 2;
-    // Four pawns start on the same square, so sharing has to work: lay
-    // them out 2x2 rather than in a row. A row at the old 9px spread
-    // overlapped 65% and the last pawn drawn hid the rest.
+    // Alla fyra står på samma ruta vid start, så delning måste fungera:
+    // 2x2 i stället för på rad.
     var half = laneCount > 1 ? 9 : 0;
-    var ox = 0, oy = index <= 0 ? cb.height * 0.2 : 0;
-    if (laneCount === 2) {
-      ox = (lane - 0.5) * 2 * half;
-    } else if (laneCount > 2) {
+    var ox = 0, oy = 0;
+    if (laneCount === 2) ox = (lane - 0.5) * 2 * half;
+    else if (laneCount > 2) {
       ox = ((lane % 2) - 0.5) * 2 * half;
-      oy += (Math.floor(lane / 2) - 0.5) * 2 * half;
+      oy = (Math.floor(lane / 2) - 0.5) * 2 * half;
     }
     return { x: cx + ox - 11, y: cy + oy - 11 };
   }
@@ -797,7 +572,6 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       var idx = Math.max(0, Math.min(CELLS, p.pos | 0));
       (byCell[idx] = byCell[idx] || []).push(s.key);
     });
-
     SEATS.forEach(function (s) {
       var p = state.peers[s.key];
       var el = pawnEls[s.key];
@@ -805,7 +579,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       if (!el) {
         el = document.createElement("div");
         el.className = "pawn";
-        el.dataset.seat = s.key;   // drives the shape/ring redundancy
+        el.dataset.seat = s.key;
         el.style.setProperty("--pawn-color", "var(" + s.varName + ")");
         pawnsEl.appendChild(el);
         pawnEls[s.key] = el;
@@ -818,71 +592,27 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       el.style.transform = "translate(" + xy.x + "px," + xy.y + "px)";
       el.style.opacity = idx === 0 ? "0.7" : "1";
       if (bumpSeat === s.key) {
-        el.classList.remove("moved");
-        void el.offsetWidth;
-        el.classList.add("moved");
+        el.classList.remove("moved"); void el.offsetWidth; el.classList.add("moved");
       }
     });
   }
 
   // ---------------------------------------------------------------
-  // Seats row — four people in two kitchens, made into one table.
+  // Lagen — allas brickor öppet. Det är det som inte går över video.
   // ---------------------------------------------------------------
   var seatsEl = $("seats");
-  function renderCenter(info) {
-    var mid = $("boardCenter");
-    if (!mid) return;
-    var act = info.active ? state.peers[info.active] : null;
-    var rd = info.reader ? state.peers[info.reader] : null;
-    mid.innerHTML = "";
-    var round = document.createElement("div");
-    round.className = "bc-round";
-    round.textContent = "Runda " + (info.round + 1);
-    var lvl = document.createElement("div");
-    lvl.className = "bc-level";
-    lvl.textContent = info.level;
-    var lsm = document.createElement("small");
-    lsm.textContent = info.level === 1 ? "POÄNG" : "POÄNG";
-    lvl.appendChild(lsm);
-    var turn = document.createElement("div");
-    turn.className = "bc-turn";
-    turn.textContent = act ? (act.seat === state.seat ? "Din tur" : act.name + "s tur") : "Väntar";
-    var read = document.createElement("div");
-    read.className = "bc-reader";
-    read.textContent = rd ? (rd.seat === state.seat ? "du läser" : rd.name + " läser") : "";
-    [round, lvl, turn, read].forEach(function (n) { mid.appendChild(n); });
-  }
-
   function renderSeats() {
     seatsEl.innerHTML = "";
-    var info = refreshHands();
-    var activeSeat = info.active;
-    renderCenter(info);
-
     SEATS.forEach(function (s) {
       var p = state.peers[s.key];
       var el = document.createElement("div");
       var cls = "seat";
       if (!p) cls += " empty";
       if (s.key === state.seat) cls += " me";
-      if (p && s.key === activeSeat) cls += " turn";
       if (p && Date.now() - (p.beat || 0) > STALE_MS) cls += " stale";
       el.className = cls;
       el.style.setProperty("--seat-color", "var(" + s.varName + ")");
       el.dataset.seat = s.key;
-
-      if (p && s.key === activeSeat) {
-        var flag = document.createElement("div");
-        flag.className = "turn-flag";
-        flag.textContent = "Har turen";
-        el.appendChild(flag);
-        el.setAttribute("aria-current", "true");
-      }
-      if (p) {
-        var live = document.createElement("i");
-        live.className = "live-dot";
-        el.appendChild(live);
-      }
 
       var dot = document.createElement("div");
       dot.className = "seat-dot";
@@ -901,248 +631,189 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       id.appendChild(ps);
       el.appendChild(id);
 
-      // Their four tiles, face up. This is the part a video call cannot
-      // do — you have to see what everyone laid on which point slot.
       if (p) {
         var mini = document.createElement("div");
         mini.className = "mini";
+        var tiles = (p.tiles && p.tiles.length === 4) ? p.tiles : [null, null, null, null];
         for (var slot = 0; slot < 4; slot++) {
           var chip = document.createElement("span");
-          var name = tileName(s.key, p, slot);
-          chip.textContent = name ? name.split(" ")[0] : "";
-          chip.title = (slot + 1) + "p: " + name;
-          var pdone = (p.done && p.done[slot]) || false;
-          if (pdone) chip.className = "done";
-          else if (s.key === activeSeat && info.level === slot + 1) chip.className = "now";
-          if (zwapArmed && !pdone) {
-            chip.className += " zwapable";
-            chip.dataset.seat = s.key;
-            chip.dataset.slot = String(slot);
+          var cat = tiles[slot] == null ? null : CATEGORIES[tiles[slot]];
+          if (cat) {
+            chip.textContent = cat.split(" ")[0];
+            chip.title = (slot + 1) + "p: " + cat;
+          } else {
+            chip.textContent = (slot + 1) + "p";
+            chip.className = "tom";
           }
           mini.appendChild(chip);
         }
         el.appendChild(mini);
       }
-
       seatsEl.appendChild(el);
     });
   }
 
-  // --- Tiles -------------------------------------------------------
-  var hands = {};        // seat -> the four categories drawn this round
-  var pickedSlot = null; // first tile tapped, waiting for its partner
-
-  function refreshHands() {
-    var info = turnInfo();
-    hands = dealRound(state.room, info.round);
-    // New round: tiles back in the bag, four fresh ones out, and every
-    // BEZZERWIZZER and ZWAP turned face up again.
-    if (state.dealt !== info.round && state.seat) {
-      state.dealt = info.round;
-      state.tiles = (hands[state.seat] || [0, 1, 2, 3]).slice();
-      state.done = [false, false, false, false];
-      state.zwap = true;
-      state.bezzers = 2;
-      state.attack = null;
-      pickedSlot = null;
-      zwapPick = null;
-      if (state.joined) announce();
-    }
-    return info;
-  }
-
-  // A peer's tiles, falling back to the deal until their first hello.
-  function tilesOf(seat, peer) {
-    if (peer && peer.tiles && peer.tiles.length === 4) return peer.tiles;
-    return hands[seat] || [0, 1, 2, 3];
-  }
-  function tileName(seat, peer, slot) {
-    var idx = tilesOf(seat, peer)[slot];
-    return CATEGORIES[idx] || "";
-  }
+  // ---------------------------------------------------------------
+  // Brickan — fyra platser som ni fyller med det ni drog
+  // ---------------------------------------------------------------
+  var pickedSlot = null;   // markerad för byte
+  var pickerSlot = null;   // öppen i väljaren
 
   function renderPlate() {
     var plate = $("plate");
     plate.innerHTML = "";
     if (!state.seat) return;
-    var info = turnInfo();
-    var myTurn = info.active === state.seat;
-
     for (var slot = 0; slot < 4; slot++) {
       var b = document.createElement("button");
       b.type = "button";
       b.className = "tile";
       b.dataset.points = (slot + 1) + "p";
       b.dataset.slot = String(slot);
-      b.textContent = CATEGORIES[state.tiles[slot]] || "";
-      if (state.done[slot]) b.classList.add("done");
-      if (myTurn && info.level === slot + 1 && !state.done[slot]) b.classList.add("current");
+      var cat = state.tiles[slot] == null ? null : CATEGORIES[state.tiles[slot]];
+      if (cat) b.textContent = cat;
+      else { b.textContent = "lägg till"; b.className += " tom"; }
       b.setAttribute("aria-pressed", String(pickedSlot === slot));
       plate.appendChild(b);
     }
-    // Only speaks up while a swap is under way — a permanent line of
-    // instruction cost the board its bottom row.
-    var hint = $("plateHint");
-    if (zwapArmed) {
-      hint.hidden = false;
-      hint.textContent = zwapPick
-        ? "ZWAP: välj brickan den ska byta med — vilken platta som helst."
-        : "ZWAP: välj första brickan.";
-    } else if (pickedSlot !== null) {
-      hint.hidden = false;
-      hint.textContent = "Välj brickan du vill byta med.";
-    } else {
-      hint.hidden = true;
-    }
   }
 
-  // Tapping two tiles swaps them — the whole game is deciding which
-  // category is worth risking on four points.
+  function openPicker(slot) {
+    pickerSlot = slot;
+    pickedSlot = null;
+    $("pickerSlot").textContent = "plats " + (slot + 1);
+    var grid = $("pickerGrid");
+    grid.innerHTML = "";
+    CATEGORIES.forEach(function (name, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = name;
+      var usedAt = state.tiles.indexOf(i);
+      b.disabled = usedAt !== -1 && usedAt !== slot;   // redan på min bricka
+      b.addEventListener("click", function () {
+        state.tiles[slot] = i;
+        closePicker();
+        announce();
+        renderPlate(); renderSeats();
+      });
+      grid.appendChild(b);
+    });
+    $("picker").hidden = false;
+    renderPlate();
+  }
+
+  function closePicker() {
+    pickerSlot = null;
+    $("picker").hidden = true;
+    renderPlate();
+  }
+
   $("plate").addEventListener("click", function (e) {
     var b = e.target.closest(".tile");
     if (!b || !state.seat) return;
     var slot = parseInt(b.dataset.slot, 10);
-    if (zwapArmed) { pickForZwap(state.seat, slot); return; }
-    if (state.done[slot]) { toast("Den brickan är redan besvarad"); return; }
+    // Tom plats öppnar väljaren. Fylld markeras, och nästa tryck byter
+    // plats på de två — det är så man kastar om sin ordning.
+    if (state.tiles[slot] == null) { openPicker(slot); return; }
     if (pickedSlot === null) { pickedSlot = slot; renderPlate(); return; }
-    if (pickedSlot === slot) { pickedSlot = null; renderPlate(); return; }
+    if (pickedSlot === slot) { openPicker(slot); return; }
     var t = state.tiles[pickedSlot];
     state.tiles[pickedSlot] = state.tiles[slot];
     state.tiles[slot] = t;
     pickedSlot = null;
     announce();
-    renderPlate();
-    renderAttack();
-    renderFinish();
-    renderJam();
-    renderSeats();
+    renderPlate(); renderSeats();
   });
 
-  // --- ZWAP ---------------------------------------------------------
-  // Swaps any two face-up tiles anywhere on the table. Since a team only
-  // owns its own plate, the swap goes out as a broadcast and each side
-  // applies its half to its own state, then announces. Everyone else
-  // patches their local picture so it moves at once instead of on the
-  // next heartbeat.
-  var zwapArmed = false, zwapPick = null;
+  $("pickerClose").addEventListener("click", closePicker);
+  $("pickerClear").addEventListener("click", function () {
+    if (pickerSlot === null) return;
+    state.tiles[pickerSlot] = null;
+    closePicker();
+    announce();
+    renderPlate(); renderSeats();
+  });
 
-  function tileIsDone(seat, peer, slot) {
-    var d = seat === state.seat ? state.done : (peer && peer.done);
-    return !!(d && d[slot]);
-  }
+  // ---------------------------------------------------------------
+  // Min panel
+  // ---------------------------------------------------------------
+  var CONTROLS = ["moveBtn", "backBtn", "knockBtn"];
 
-  function pickForZwap(seat, slot) {
-    var peer = state.peers[seat];
-    if (!peer) return;
-    if (tileIsDone(seat, peer, slot)) { toast("Vänd bricka går inte att byta"); return; }
-    if (!zwapPick) {
-      zwapPick = { seat: seat, slot: slot };
-      renderPlate(); renderSeats();   // renderPlate writes the hint
+  function renderMine() {
+    var idx = seatIndex(state.seat);
+    var seatless = idx < 0;
+    $("seatlessNote").hidden = !seatless;
+    CONTROLS.forEach(function (id) { $(id).disabled = seatless; });
+    $("plate").style.opacity = seatless ? ".35" : "";
+    $("steps").style.opacity = seatless ? ".35" : "";
+
+    if (seatless) {
+      $("mine").style.setProperty("--my-color", "var(--ink-faint)");
+      $("myDot").style.setProperty("--seat-color", "var(--ink-faint)");
+      $("myDot").textContent = "–";
+      $("myName").textContent = "Utan plats";
+      $("myPos").textContent = "bordet är fullt";
       return;
     }
-    if (zwapPick.seat === seat && zwapPick.slot === slot) {   // tapped again: cancel
-      zwapPick = null; renderPlate(); renderSeats(); return;
-    }
-    var a = zwapPick, b = { seat: seat, slot: slot };
-    var catA = tilesOf(a.seat, state.peers[a.seat])[a.slot];
-    var catB = tilesOf(b.seat, state.peers[b.seat])[b.slot];
-
-    state.zwap = false;
-    zwapArmed = false; zwapPick = null;
-    state.channel.send({
-      type: "broadcast", event: "zwap",
-      payload: { by: state.name, a: a, b: b, catA: catA, catB: catB }
-    });
-    applyZwap({ by: "Du", a: a, b: b, catA: catA, catB: catB }, true);
+    var s = SEATS[idx];
+    $("mine").style.setProperty("--my-color", "var(" + s.varName + ")");
+    var dot = $("myDot");
+    dot.style.setProperty("--seat-color", "var(" + s.varName + ")");
+    dot.textContent = (state.name || "?").charAt(0).toUpperCase();
+    $("myName").textContent = state.name;
+    $("myPos").textContent = state.pos > 0 ? "ruta " + state.pos + " av " + CELLS : "på startrutan";
+    $("moveBtn").textContent = "Flytta " + state.step + " steg";
+    $("backBtn").disabled = state.pos <= 0;
   }
 
-  function applyZwap(d, mine) {
-    if (d.a.seat === state.seat) state.tiles[d.a.slot] = d.catB;
-    if (d.b.seat === state.seat) state.tiles[d.b.slot] = d.catA;
-    // Patch the local view of other plates so the swap is visible now.
-    [[d.a, d.catB], [d.b, d.catA]].forEach(function (pair) {
-      var p = state.peers[pair[0].seat];
-      if (p && p.seat !== state.seat && p.tiles) p.tiles[pair[0].slot] = pair[1];
+  $("steps").addEventListener("click", function (e) {
+    var b = e.target.closest(".step");
+    if (!b) return;
+    state.step = parseInt(b.dataset.step, 10);
+    Array.prototype.forEach.call(this.querySelectorAll(".step"), function (x) {
+      x.setAttribute("aria-pressed", String(x === b));
     });
-    logLine("<b>" + esc(d.by) + "</b> zwappade " +
-      esc(CATEGORIES[d.catA]) + " mot " + esc(CATEGORIES[d.catB]) + ".");
-    if (d.a.seat === state.seat || d.b.seat === state.seat || mine) announce();
-    renderPlate(); renderSeats(); renderMine();
-  }
-
-  $("zwapBtn").addEventListener("click", function () {
-    if (!state.zwap || !state.seat) return;
-    var info = turnInfo();
-    if (info.active !== state.seat) { toast("ZWAP spelas på din egen tur"); return; }
-    zwapArmed = !zwapArmed;
-    zwapPick = null;
-    renderPlate(); renderSeats(); renderMine();
+    renderMine();
   });
 
-  // --- BEZZERWIZZER -------------------------------------------------
-  // Two per round, played when it is someone else's turn. The app never
-  // judges the answers — the table does that out loud. It records who
-  // attacked whom for how much, and then what happened.
-  function startAttack(stake) {
-    stakePrompt = false;
-    var info = turnInfo();
-    if (!info.active || info.active === state.seat) return;
-    state.attack = {
-      defender: info.active, stake: stake,
-      level: info.level, at: Date.now()
-    };
-    state.bezzers = Math.max(0, state.bezzers - 1);
-    announce();
-    var who = state.peers[info.active];
-    state.channel.send({
-      type: "broadcast", event: "shout",
-      payload: { by: state.name, seat: state.seat, defender: info.active, stake: stake }
-    });
-    logLine("<b>Du</b> ropade BEZZERWIZZER mot <b>" +
-      esc(who ? who.name : "") + "</b> för " + stake + " poäng.");
-    buzz([50, 40, 50]);
-    renderMine(); renderAttack();
+  // ---------------------------------------------------------------
+  // Flödet, notiser, knackning
+  // ---------------------------------------------------------------
+  var feedEl = $("feed");
+  function logLine(html) {
+    var p = document.createElement("p");
+    p.innerHTML = html;
+    feedEl.insertBefore(p, feedEl.firstChild);
+    while (feedEl.children.length > 12) feedEl.removeChild(feedEl.lastChild);
   }
 
-  function endAttack(outcome) {
-    var a = state.attack;
-    if (!a) return;
-    var def = state.peers[a.defender];
-    if (outcome === "won") {
-      move(a.stake);
-      logLine("<b>Du</b> tog " + a.stake + " poäng på attacken.");
-    } else if (outcome === "push") {
-      // The defender owns their own position, so ask them to step back.
-      state.channel.send({
-        type: "broadcast", event: "push",
-        payload: { by: state.name, target: a.defender, steps: a.stake }
-      });
-      logLine("<b>Du</b> knuffade <b>" + esc(def ? def.name : "") + "</b> " +
-        a.stake + " steg bakåt.");
-    } else if (outcome === "bothWrong") {
-      // A team on the start square cannot lose points.
-      if (state.pos > 0) { move(-1); logLine("Båda svarade fel — <b>du</b> backade ett steg."); }
-      else logLine("Båda svarade fel, men du står på start och tappar inget.");
-    } else {
-      logLine("<b>" + esc(def ? def.name : "Försvararen") + "</b> klarade den. Brickan är borta.");
-    }
-    state.attack = null;
-    announce();
-    state.channel.send({
-      type: "broadcast", event: "shout-end",
-      payload: { by: state.name, outcome: outcome, stake: a.stake }
+  var toastTimer;
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+  function buzz(pattern) {
+    try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+  }
+  function knock(fromSeat) {
+    var targets = [];
+    var seatEl = seatsEl.querySelector('[data-seat="' + fromSeat + '"]');
+    if (seatEl) targets.push(seatEl);
+    targets.push($("boardWrap"));
+    targets.forEach(function (el) {
+      el.classList.remove("knocking"); void el.offsetWidth; el.classList.add("knocking");
     });
-    renderMine(); renderAttack();
   }
 
-  // --- Jam ----------------------------------------------------------
-  // Spotify has no public API for Jams — they exist only inside their own
-  // apps — so the app is where the link is shared, not where it is made.
-  // Spotify keeps the music in sync; we just get everyone to the same one.
+  // ---------------------------------------------------------------
+  // Spotify Jam — appen delar länken, Spotify sköter musiken
+  // ---------------------------------------------------------------
   var jamEditing = false;
 
-  // Anyone in the room can put a link in front of everyone else, so only
-  // Spotify's own hosts are accepted.
+  // Vem som helst i rummet kan lägga en länk framför de andra, så bara
+  // Spotifys egna värdar släpps igenom.
   function validJamUrl(raw) {
     var s = String(raw || "").trim();
     if (!s) return null;
@@ -1157,15 +828,12 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     } catch (e) { return null; }
   }
 
-  // Presence arrives from other viewers and never passed the broadcast
-  // check, so the link is re-validated here — this is what becomes an
-  // href everyone taps.
   function liveJam() {
     var best = null;
     SEATS.forEach(function (s) {
       var p = state.peers[s.key];
       if (!p || !p.jam) return;
-      var safe = validJamUrl(p.jam.url);
+      var safe = validJamUrl(p.jam.url);   // presence passerar ingen kontroll
       if (!safe) return;
       if (!best || (p.jam.at || 0) > (best.jam.at || 0)) {
         best = { seat: s.key, jam: { url: safe, at: p.jam.at || 0 }, name: p.name };
@@ -1176,27 +844,22 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
   function renderJam() {
     var body = $("jamBody");
-    if (!body) return;
     body.innerHTML = "";
     var jam = liveJam();
 
     if (jamEditing) {
       var input = document.createElement("input");
-      input.type = "url";
-      input.id = "jamInput";
+      input.type = "url"; input.id = "jamInput";
       input.placeholder = "Klistra in Jam-länken";
       input.setAttribute("inputmode", "url");
-      input.setAttribute("enterkeyhint", "done");
       var save = document.createElement("button");
-      save.className = "jam-act filled";
-      save.textContent = "Dela";
+      save.className = "jam-act filled"; save.textContent = "Dela";
       save.addEventListener("click", function () { submitJam(input.value); });
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") submitJam(input.value);
       });
       var cancel = document.createElement("button");
-      cancel.className = "jam-act quiet";
-      cancel.textContent = "Avbryt";
+      cancel.className = "jam-act quiet"; cancel.textContent = "Avbryt";
       cancel.addEventListener("click", function () { jamEditing = false; renderJam(); });
       body.appendChild(input); body.appendChild(save); body.appendChild(cancel);
       input.focus();
@@ -1210,25 +873,16 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         ? "<b>Ditt Jam</b> spelas"
         : "<b>" + esc(jam.name || "Någon") + "</b> har startat ett Jam";
       body.appendChild(txt);
-
       var join = document.createElement("a");
-      join.className = "jam-act filled";
-      join.textContent = "Haka på";
-      join.href = jam.jam.url;
-      join.target = "_blank";
-      join.rel = "noopener noreferrer";
-      join.style.display = "flex";
-      join.style.alignItems = "center";
-      join.style.textDecoration = "none";
+      join.className = "jam-act filled"; join.textContent = "Haka på";
+      join.href = jam.jam.url; join.target = "_blank"; join.rel = "noopener noreferrer";
+      join.style.cssText = "display:flex;align-items:center;text-decoration:none";
       body.appendChild(join);
-
       if (jam.seat === state.seat) {
         var stop = document.createElement("button");
-        stop.className = "jam-act quiet";
-        stop.textContent = "Ta bort";
+        stop.className = "jam-act quiet"; stop.textContent = "Ta bort";
         stop.addEventListener("click", function () {
           state.jam = null; announce(); renderJam();
-          logLine("<b>Du</b> tog bort Jam-länken.");
         });
         body.appendChild(stop);
       }
@@ -1236,8 +890,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       txt.textContent = "Ingen musik igång";
       body.appendChild(txt);
       var start = document.createElement("button");
-      start.className = "jam-act";
-      start.textContent = "Dela Jam";
+      start.className = "jam-act"; start.textContent = "Dela Jam";
       start.addEventListener("click", function () { jamEditing = true; renderJam(); });
       body.appendChild(start);
     }
@@ -1245,320 +898,44 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
   function submitJam(raw) {
     var url = validJamUrl(raw);
-    if (!url) {
-      toast("Det där ser inte ut som en Spotify-länk");
-      return;
-    }
+    if (!url) { toast("Det där ser inte ut som en Spotify-länk"); return; }
     state.jam = { url: url, at: Date.now() };
     jamEditing = false;
     announce();
     if (state.channel) {
-      state.channel.send({
-        type: "broadcast", event: "jam",
-        payload: { by: state.name, url: url }
-      });
+      state.channel.send({ type: "broadcast", event: "jam", payload: { by: state.name, url: url } });
     }
-    logLine("<b>Du</b> delade ett Jam.");
     renderJam();
   }
 
-  // --- Målgång och omstart ------------------------------------------
-  function winners() {
-    return SEATS.filter(function (s) {
-      var p = state.peers[s.key];
-      return p && (p.pos | 0) >= CELLS;
-    });
-  }
-
-  function renderFinish() {
-    var w = winners();
-    var box = $("finishBox");
-    if (!w.length) { box.hidden = true; return; }
-    box.hidden = false;
-    var names = w.map(function (s) { return state.peers[s.key].name; });
-    $("finishTitle").textContent = names.length === 1
-      ? names[0] + " är i mål!"
-      : names.join(" och ") + " är i mål samtidigt!";
-    $("finishBox").querySelector(".finish-note").textContent = names.length > 1
-      ? "Lika många frågor åt alla, sedan avgör en utslagsfråga."
-      : "Spela klart rundan så alla lag fått lika många frågor.";
-  }
-
-  function applyRestart(by) {
-    state.pos = 0;
-    state.turn = 0;
-    state.dealt = -1;                 // forces a fresh deal
-    state.done = [false, false, false, false];
-    state.zwap = true;
-    state.bezzers = 2;
-    state.attack = null;
-    pickedSlot = null; zwapPick = null; zwapArmed = false; stakePrompt = false;
-    logLine("<b>" + esc(by) + "</b> startade en ny omgång.");
-    // Put the reset me into the roster before anything reads it —
-    // winners() looks at state.peers, not at state.pos.
-    if (state.seat) {
-      roster[peerId] = myPayload();
-      state.peers[state.seat] = roster[peerId];
-    }
-    SEATS.forEach(function (s) {          // clear everyone optimistically
-      var p = state.peers[s.key];
-      if (p && p.peer !== peerId) { p.pos = 0; p.done = [false, false, false, false]; }
-    });
-    announce();
-    renderSeats(); renderMine(); renderPlate(); renderAttack(); renderFinish();
-    renderPawns();
-  }
-
-  // Tracked apart from state.epoch: applyRestart's own hello carries the
-  // new epoch, so judging "have I done this one?" by the epoch alone made
-  // the restart message look stale and get dropped.
-  var lastRestart = 0;
-
-  $("restartBtn").addEventListener("click", function () {
-    if (!state.channel) return;
-    var e = (state.epoch || 0) + 1;   // lets turn legitimately go back to 0
-    lastRestart = e;
-    state.epoch = e;
-    state.channel.send({
-      type: "broadcast", event: "restart",
-      payload: { by: state.name, epoch: e }
-    });
-    applyRestart("Du");
-  });
-
-  $("leaveBtn").addEventListener("click", function () {
-    clearState();
-    if (state.channel) {
-      state.channel.send({ type: "broadcast", event: "bye", payload: { peer: peerId } });
-    }
-    location.href = location.pathname + "?rum=" + state.room;
-  });
-
-  var stakePrompt = false;   // choosing 1 or 3 — a redraw must not eat it
-
-  function renderAttack() {
-    if (stakePrompt) return;
-    var box = $("attackBox"), acts = $("attackActions");
-    // Someone else's attack is worth showing too — you need to know.
-    var live = state.attack ? { seat: state.seat, a: state.attack } : null;
-    if (!live) {
-      SEATS.forEach(function (s) {
-        var p = state.peers[s.key];
-        if (!live && p && p.attack) live = { seat: s.key, a: p.attack };
-      });
-    }
-    if (!live) { box.hidden = true; acts.innerHTML = ""; return; }
-
-    box.hidden = false;
-    var att = state.peers[live.seat];
-    var def = state.peers[live.a.defender];
-    var mine = live.seat === state.seat;
-    $("attackTitle").innerHTML = (mine ? "<b>Du</b>" : "<b>" + esc(att ? att.name : "Någon") + "</b>") +
-      " ropade BEZZERWIZZER mot <b>" + esc(def ? def.name : "") + "</b> för " +
-      live.a.stake + " poäng.";
-
-    acts.innerHTML = "";
-    if (!mine) return;   // only the attacker records the outcome
-
-    var opts = [["won", "Jag tog den — +" + live.a.stake + " steg", "win"]];
-    // On the home stretch a won attack may push the defender back instead.
-    if (def && (def.pos | 0) >= HOME_STRETCH && (def.pos | 0) < CELLS) {
-      opts.push(["push", "Jag tog den — knuffa " + def.name + " " +
-        live.a.stake + " steg bakåt", "win"]);
-    }
-    opts.push(["defended", (def ? def.name : "Försvararen") + " klarade den — brickan är borta", ""]);
-    opts.push(["bothWrong", "Båda svarade fel — −1 steg", "lose"]);
-    opts.forEach(function (o) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = o[2]; b.textContent = o[1];
-      b.addEventListener("click", function () { endAttack(o[0]); });
-      acts.appendChild(b);
-    });
-  }
-
-  $("bezzerBtn").addEventListener("click", function () {
-    if (!state.seat || state.bezzers <= 0 || state.attack) return;
-    var info = turnInfo();
-    if (info.active === state.seat) { toast("Du attackerar när det är någon annans tur"); return; }
-    var acts = $("attackActions");
-    stakePrompt = true;
-    $("attackBox").hidden = false;
-    $("attackTitle").textContent = "Hur mycket satsar du?";
-    acts.innerHTML = "";
-    [[1, "1 poäng — efter att frågan lästs"], [3, "3 poäng — innan frågan läses"]]
-      .forEach(function (o) {
-        var b = document.createElement("button");
-        b.type = "button"; b.textContent = o[1];
-        b.addEventListener("click", function () { startAttack(o[0]); });
-        acts.appendChild(b);
-      });
-    var c = document.createElement("button");
-    c.type = "button"; c.textContent = "Avbryt";
-    c.addEventListener("click", function () { stakePrompt = false; renderAttack(); });
-    acts.appendChild(c);
-  });
-
-  var CONTROLS = ["moveBtn", "backBtn", "knockBtn", "passBtn"];
-
-  // A ZWAP can reach any face-up tile, including on other teams' rows.
-  seatsEl.addEventListener("click", function (e) {
-    if (!zwapArmed) return;
-    var chip = e.target.closest(".mini span.zwapable");
-    if (!chip) return;
-    pickForZwap(chip.dataset.seat, parseInt(chip.dataset.slot, 10));
-  });
-
-  function renderMine() {
-    var idx = seatIndex(state.seat);
-    var seatless = idx < 0;
-
-    $("seatlessNote").hidden = !seatless;
-    CONTROLS.forEach(function (id) { $(id).disabled = seatless; });
-    $("plate").style.opacity = seatless ? ".35" : "";
-
-    if (seatless) {
-      $("mine").style.setProperty("--my-color", "var(--ink-faint)");
-      $("myDot").style.setProperty("--seat-color", "var(--ink-faint)");
-      $("myDot").textContent = "–";
-      $("myName").textContent = "Utan plats";
-      $("myPos").textContent = "bordet är fullt";
-      var tsOff = $("turnState");
-      tsOff.textContent = "väntar";
-      tsOff.classList.remove("active");
-      $("passBtn").classList.remove("ready");
-      return;
-    }
-
-    var s = SEATS[idx];
-    $("mine").style.setProperty("--my-color", "var(" + s.varName + ")");
-    var dot = $("myDot");
-    dot.style.setProperty("--seat-color", "var(" + s.varName + ")");
-    dot.textContent = (state.name || "?").charAt(0).toUpperCase();
-    $("myName").textContent = state.name;
-    $("myPos").textContent = state.pos > 0 ? "ruta " + state.pos + " av " + CELLS : "på startrutan";
-
-    var info = turnInfo();
-    var myTurn = info.active === state.seat;
-    var iRead = info.reader === state.seat;
-    var ts = $("turnState");
-    ts.textContent = myTurn ? info.level + " poäng" : iRead ? "du läser" : "väntar";
-    ts.classList.toggle("active", myTurn);
-
-    $("passBtn").classList.toggle("ready", myTurn);
-    $("passBtn").textContent = myTurn ? "Fel svar — nästa lag →" : "Hoppa över →";
-
-    // The number of steps is not a choice: it is the point value of the
-    // question just answered, which is the slot the tile was laid on.
-    $("moveBtn").textContent = myTurn
-      ? "Rätt — flytta " + info.level + (info.level === 1 ? " steg" : " steg")
-      : "Inte din tur";
-    $("moveBtn").disabled = !myTurn;
-    $("backBtn").disabled = state.pos <= 0;
-
-    var z = $("zwapBtn");
-    z.disabled = !state.zwap || !myTurn;
-    z.classList.toggle("armed", zwapArmed);
-    z.textContent = state.zwap ? "ZWAP" : "ZWAP använd";
-
-    var bz = $("bezzerBtn");
-    bz.disabled = state.bezzers <= 0 || myTurn || !!state.attack;
-    bz.innerHTML = "BEZZERWIZZER <b>" + state.bezzers + "</b>";
-  }
-
   // ---------------------------------------------------------------
-  // Activity feed — visible proof the link is live
+  // Realtid. Presence är avstängt i Supabase-projektet, så rostret hålls
+  // över broadcast: alla ropar hello med jämna mellanrum, nyanlända
+  // frågar who, och den som varit tyst länge faller bort.
   // ---------------------------------------------------------------
-  var feedEl = $("feed");
-  function logLine(html) {
-    var empty = $("feedEmpty");
-    if (empty) empty.remove();
-    var line = document.createElement("p");
-    line.className = "feed-line";
-    var t = document.createElement("time");
-    var d = new Date();
-    t.textContent = String(d.getHours()).padStart(2, "0") + ":" +
-                    String(d.getMinutes()).padStart(2, "0") + ":" +
-                    String(d.getSeconds()).padStart(2, "0");
-    line.appendChild(t);
-    var span = document.createElement("span");
-    span.innerHTML = html;
-    line.appendChild(span);
-    feedEl.insertBefore(line, feedEl.firstChild);
-    while (feedEl.children.length > 30) feedEl.removeChild(feedEl.lastChild);
-  }
+  var client = window.supabase && window.supabase.createClient
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        realtime: { params: { eventsPerSecond: 20 } }
+      })
+    : null;
 
-  var toastTimer;
-  function toast(msg) {
-    var t = $("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
-  }
-
-  function buzz(pattern) {
-    try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* not supported */ }
-  }
-
-  function knock(fromSeat) {
-    var targets = [];
-    var seatEl = seatsEl.querySelector('[data-seat="' + fromSeat + '"]');
-    if (seatEl) targets.push(seatEl);
-    targets.push($("boardWrap"));
-    targets.forEach(function (el) {
-      el.classList.remove("knocking");
-      void el.offsetWidth;
-      el.classList.add("knocking");
-    });
-  }
-
-  // ---------------------------------------------------------------
-  // Realtime
-  // ---------------------------------------------------------------
-  if (!window.supabase || !window.supabase.createClient) {
-    // The realtime library never arrived. Say so plainly instead of
-    // leaving four people staring at a page that does nothing.
-    $("lobbyNote").textContent =
-      "Kunde inte ladda realtidsbiblioteket. Kolla uppkopplingen och ladda om sidan.";
-    $("joinBtn").disabled = true;
-    return;
-  }
-
-  var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    realtime: { params: { eventsPerSecond: 20 } }
-  });
-
-  // Who is at the table, keyed by peer. Supabase Presence is not
-  // enabled on this project, so the roster is kept over broadcast
-  // instead: everyone announces themselves on a heartbeat, answers a
-  // newcomer's "who" at once, and says "bye" on the way out. A peer
-  // that has gone quiet for GONE_MS is dropped.
   var roster = {};
-  var GONE_MS = 90000;
 
   function myPayload() {
     return {
       peer: peerId, seat: state.seat, name: state.name,
-      pos: state.pos, turn: state.turn, beat: Date.now(),
-      since: state.since,
-      tiles: state.tiles, done: state.done,
-      zwap: state.zwap, bezzers: state.bezzers, attack: state.attack,
-      epoch: state.epoch, jam: state.jam
+      pos: state.pos, tiles: state.tiles, jam: state.jam,
+      since: state.since, beat: Date.now()
     };
   }
 
-  // Everything worth losing lives here. Saved on every announce, which
-  // is every meaningful change, so a stray reload costs nothing.
   function saveState() {
     if (!state.joined || !state.seat) return;
     store("sessionStorage", "spelbordet.state", JSON.stringify({
       room: state.room, name: state.name, seat: state.seat, since: state.since,
-      pos: state.pos, tiles: state.tiles, done: state.done, dealt: state.dealt,
-      zwap: state.zwap, bezzers: state.bezzers, turn: state.turn, epoch: state.epoch,
-      jam: state.jam
+      pos: state.pos, tiles: state.tiles, jam: state.jam
     }));
   }
-
   function loadState(room) {
     try {
       var raw = store("sessionStorage", "spelbordet.state");
@@ -1567,16 +944,14 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       return (s && s.room === room && s.seat) ? s : null;
     } catch (e) { return null; }
   }
-
   function clearState() {
     try { window.sessionStorage.removeItem("spelbordet.state"); } catch (e) {}
   }
 
   function announce() {
     saveState();
-    // Keep my own roster entry current. Renders read state.peers, not
-    // state.*, so without this my own changes only appeared to me on the
-    // next heartbeat — the bug that hid the finish banner and the Jam.
+    // Renders läser state.peers, inte state.* — utan detta syns mina egna
+    // ändringar bara för mig, och först vid nästa heartbeat.
     if (state.seat) {
       roster[peerId] = myPayload();
       state.peers[state.seat] = roster[peerId];
@@ -1585,67 +960,42 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       state.channel.send({ type: "broadcast", event: "hello", payload: myPayload() });
     }
   }
-  // Kept as the old name so every caller still reads as "tell the table".
-  var pushPresence = announce;
 
   function rebuildRoster() {
-    var next = {};
-    var now = Date.now();
-    // Me first, so my own seat is never lost to a stale echo.
-    roster[peerId] = myPayload();
+    var next = {}, now = Date.now();
+    if (state.seat) roster[peerId] = myPayload();
 
     Object.keys(roster).forEach(function (pid) {
       var p = roster[pid];
       if (!p || !p.seat) return;
       if (pid !== peerId && now - (p.beat || 0) > GONE_MS) { delete roster[pid]; return; }
-      // Two peers on one seat: whoever sat down first keeps it, with the
-      // peer id only as a tiebreak. Every client resolves it identically,
-      // so there is no ping-pong — and a latecomer can no longer evict
-      // someone who has been playing all evening.
+      // Två på samma plats: den som satte sig först vinner, peer-id bara
+      // som skiljedomare. Alla klienter löser det likadant.
       var held = next[p.seat];
       if (held) {
         var hs = held.since || 0, ps = p.since || 0;
         if (hs < ps || (hs === ps && held.peer < p.peer)) return;
       }
       next[p.seat] = p;
-      // A newer epoch wins outright; within an epoch the counter only
-      // ever climbs, so max() converges without arbitration.
-      var pe = p.epoch || 0;
-      if (pe > state.epoch) { state.epoch = pe; state.turn = p.turn || 0; }
-      else if (pe === state.epoch && typeof p.turn === "number" && p.turn > state.turn) {
-        state.turn = p.turn;
-      }
     });
 
-    // Did someone else win my seat?
     if (state.seat && next[state.seat] && next[state.seat].peer !== peerId) {
       var free = firstFree(next);
       if (free) {
-        state.seat = free.key;
-        state.since = Date.now();
+        state.seat = free.key; state.since = Date.now();
         roster[peerId] = myPayload();
         next[free.key] = roster[peerId];
         logLine("<b>Platskrock</b> — du flyttades till " + esc(free.label) + ".");
         announce();
       } else {
-        // Table full and my seat is gone. Without this branch state.seat
-        // kept pointing at someone else's seat, and every move I made
-        // wrote into their pawn — two people sharing one piece.
         state.seat = null;
         delete roster[peerId];
-        logLine("<b>Du blev utan plats</b> — bordet är fullt.");
         toast("Bordet är fullt");
       }
     }
 
     state.peers = next;
-    renderSeats();
-    renderPawns();
-    renderMine();
-    renderPlate();
-    renderAttack();
-    renderFinish();
-    renderJam();
+    renderSeats(); renderPawns(); renderMine(); renderJam();
   }
 
   function setConn(up, text) {
@@ -1657,7 +1007,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
   function connect() {
     state.channel = client.channel("spelbordet-" + state.room, {
-      config: { presence: { key: peerId }, broadcast: { self: false } }
+      config: { broadcast: { self: false } }
     });
 
     state.channel
@@ -1669,13 +1019,12 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         roster[d.peer] = d;
         if (isNew) {
           logLine("<b>" + esc(d.name) + "</b> satte sig vid bordet.");
-          announce();   // so the newcomer sees me too
+          announce();
         }
         rebuildRoster();
       })
       .on("broadcast", { event: "who" }, function (m) {
-        var d = m.payload || {};
-        if (d.peer === peerId) return;
+        if ((m.payload || {}).peer === peerId) return;
         announce();
       })
       .on("broadcast", { event: "bye" }, function (m) {
@@ -1687,79 +1036,17 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       })
       .on("broadcast", { event: "move" }, function (m) {
         var d = m.payload || {};
-        var moved = d.delta > 0
-          ? "gick " + d.delta + " steg fram"
-          : "backade " + Math.abs(d.delta) + " steg";
-        logLine("<b>" + esc(d.name) + "</b> " + moved + " till ruta " + (d.pos | 0) + ".");
+        var steg = Math.abs(d.delta | 0);
+        logLine("<b>" + esc(d.name) + "</b> " +
+          (d.delta > 0 ? "gick " + steg + " steg fram" : "backade " + steg + " steg") +
+          " till ruta " + (d.pos | 0) + ".");
         if (d.peer && roster[d.peer]) {
           roster[d.peer].pos = d.pos | 0;
           roster[d.peer].beat = Date.now();
         }
         if (state.peers[d.seat]) state.peers[d.seat].pos = d.pos | 0;
-        renderSeats();
-        renderPawns(d.seat);
-        if ((d.pos | 0) >= CELLS) {
-          logLine("<b>" + esc(d.name) + "</b> är i mål!");
-          toast(d.name + " är i mål!");
-        }
-      })
-      .on("broadcast", { event: "turn" }, function (m) {
-        var d = m.payload || {};
-        if (typeof d.turn !== "number" || d.turn <= state.turn) return;
-        state.turn = d.turn;
-        renderSeats(); renderMine(); renderPlate(); pushPresence();
-        var seat = SEATS[state.turn % 4];
-        var who = state.peers[seat.key];
-        logLine("Turen gick vidare till <b>" + esc(who ? who.name : seat.label) + "</b>.");
-        if (seat.key === state.seat) { buzz([40, 60, 40]); toast("Din tur!"); }
-      })
-      .on("broadcast", { event: "jam" }, function (m) {
-        var d = m.payload || {};
-        if (!validJamUrl(d.url)) return;   // untrusted: same check on receipt
-        logLine("<b>" + esc(d.by) + "</b> startade ett Jam — tryck <b>Haka på</b>.");
-        renderJam();
-      })
-      .on("broadcast", { event: "push" }, function (m) {
-        var d = m.payload || {};
-        if (d.target !== state.seat) {
-          var t = state.peers[d.target];
-          logLine("<b>" + esc(d.by) + "</b> knuffade <b>" +
-            esc(t ? t.name : "") + "</b> " + (d.steps | 0) + " steg bakåt.");
-          return;
-        }
-        move(-(d.steps | 0));
-        logLine("<b>" + esc(d.by) + "</b> knuffade dig " + (d.steps | 0) + " steg bakåt.");
-        buzz([70, 50, 70]);
-        toast(d.by + " knuffade dig bakåt");
-      })
-      .on("broadcast", { event: "restart" }, function (m) {
-        var d = m.payload || {};
-        var e = d.epoch || 0;
-        if (e <= lastRestart) return;
-        lastRestart = e;
-        if (e > state.epoch) state.epoch = e;
-        applyRestart(d.by || "Någon");
-      })
-      .on("broadcast", { event: "zwap" }, function (m) {
-        var d = m.payload || {};
-        if (!d.a || !d.b) return;
-        applyZwap(d, false);
-      })
-      .on("broadcast", { event: "shout" }, function (m) {
-        var d = m.payload || {};
-        var def = state.peers[d.defender];
-        logLine("<b>" + esc(d.by) + "</b> ropade BEZZERWIZZER mot <b>" +
-          esc(def ? def.name : "") + "</b> för " + (d.stake | 0) + " poäng.");
-        buzz([50, 40, 50]);
-        renderAttack();
-      })
-      .on("broadcast", { event: "shout-end" }, function (m) {
-        var d = m.payload || {};
-        var txt = d.outcome === "won" ? "tog " + (d.stake | 0) + " poäng"
-                : d.outcome === "bothWrong" ? "missade också — backade ett steg"
-                : "blev stoppad";
-        logLine("<b>" + esc(d.by) + "</b> " + txt + ".");
-        renderAttack();
+        renderSeats(); renderPawns(d.seat);
+        if ((d.pos | 0) >= CELLS) toast(d.name + " är i mål!");
       })
       .on("broadcast", { event: "knock" }, function (m) {
         var d = m.payload || {};
@@ -1767,11 +1054,19 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         logLine("<b>" + esc(d.name) + "</b> knackade på bordet.");
         buzz(30);
       })
+      .on("broadcast", { event: "jam" }, function (m) {
+        var d = m.payload || {};
+        if (!validJamUrl(d.url)) return;
+        logLine("<b>" + esc(d.by) + "</b> startade ett Jam.");
+        renderJam();
+      })
+      .on("broadcast", { event: "reset" }, function (m) {
+        applyReset(esc((m.payload || {}).by || "Någon"));
+      })
       .subscribe(function (status) {
         if (status === "SUBSCRIBED") {
           setConn(true, "live");
           announce();
-          // Ask whoever is already here to introduce themselves.
           state.channel.send({ type: "broadcast", event: "who", payload: { peer: peerId } });
         }
         else if (status === "CHANNEL_ERROR") setConn(false, "kunde inte ansluta");
@@ -1781,26 +1076,18 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   }
 
   // ---------------------------------------------------------------
-  // Actions
+  // Handlingar
   // ---------------------------------------------------------------
   function move(delta) {
     if (!state.seat || !state.channel) return;
     var next = Math.max(0, Math.min(CELLS, state.pos + delta));
     if (next === state.pos) {
-      // Used to be a silent dead button once you were home.
       toast(state.pos >= CELLS ? "Du är redan i mål" : "Du står redan på start");
       return;
     }
     state.pos = next;
-    if (state.peers[state.seat]) state.peers[state.seat].pos = next;
-    pushPresence();
-    renderPawns(state.seat);
-    renderMine();
-    renderPlate();
-    renderAttack();
-    renderFinish();
-    renderJam();
-    renderSeats();
+    announce();
+    renderPawns(state.seat); renderMine(); renderSeats();
     logLine("<b>Du</b> " + (delta > 0 ? "gick " + delta + " steg fram" : "backade ett steg") +
             " till ruta " + state.pos + ".");
     state.channel.send({
@@ -1810,67 +1097,60 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     if (state.pos >= CELLS) toast("Du är i mål!");
   }
 
-  function passTurn() {
-    if (!state.seat || !state.channel) return;
-    state.turn += 1;
-    renderSeats(); renderMine(); renderPlate(); pushPresence();
-    var seat = SEATS[state.turn % 4];
-    var who = state.peers[seat.key];
-    logLine("Du lämnade över turen till <b>" + esc(who ? who.name : seat.label) + "</b>.");
-    state.channel.send({ type: "broadcast", event: "turn", payload: { turn: state.turn } });
+  function applyReset(by) {
+    state.pos = 0;
+    state.tiles = [null, null, null, null];
+    pickedSlot = null;
+    closePicker();
+    SEATS.forEach(function (s) {
+      var p = state.peers[s.key];
+      if (p && p.peer !== peerId) { p.pos = 0; p.tiles = [null, null, null, null]; }
+    });
+    announce();
+    logLine("<b>" + by + "</b> nollställde bordet.");
+    renderSeats(); renderPawns(); renderMine(); renderPlate();
   }
 
-  // Right answer: move the question's point value, turn the tile face
-  // down, and hand on. Wrong answer costs nothing but the turn.
-  $("moveBtn").addEventListener("click", function () {
-    if (!state.seat || !state.channel) return;
-    var info = turnInfo();
-    if (info.active !== state.seat) return;
-    state.done[info.level - 1] = true;
-    move(info.level);
-    passTurn();
-  });
+  $("moveBtn").addEventListener("click", function () { move(state.step); });
   $("backBtn").addEventListener("click", function () { move(-1); });
-  $("passBtn").addEventListener("click", function () {
-    var info = turnInfo();
-    // A wrong answer still uses up the question — turn the tile.
-    if (info.active === state.seat) state.done[info.level - 1] = true;
-    passTurn();
-  });
   $("knockBtn").addEventListener("click", function () {
     if (!state.seat || !state.channel) return;
-    knock(state.seat);
-    buzz(30);
+    knock(state.seat); buzz(30);
     state.channel.send({
       type: "broadcast", event: "knock",
       payload: { seat: state.seat, name: state.name }
     });
   });
-
+  $("resetBtn").addEventListener("click", function () {
+    if (!state.channel) return;
+    applyReset("Du");
+    state.channel.send({ type: "broadcast", event: "reset", payload: { by: state.name } });
+  });
   $("rejoinBtn").addEventListener("click", function () { location.reload(); });
-
+  $("leaveBtn").addEventListener("click", function () {
+    clearState();
+    if (state.channel) {
+      state.channel.send({ type: "broadcast", event: "bye", payload: { peer: peerId } });
+    }
+    location.href = location.pathname + "?rum=" + state.room;
+  });
   $("shareBtn").addEventListener("click", function () {
     var url = location.origin + location.pathname + "?rum=" + state.room;
     if (navigator.share) {
-      navigator.share({ title: "Spelbordet", text: "Häng med vid bordet", url: url })
-        .catch(function () { /* dismissed */ });
+      navigator.share({ title: "Spelbordet", text: "Häng med vid bordet", url: url }).catch(function () {});
       return;
     }
     if (navigator.clipboard) {
       navigator.clipboard.writeText(url)
         .then(function () { toast("Länken är kopierad"); })
         .catch(function () { toast(url); });
-    } else {
-      toast(url);
-    }
+    } else toast(url);
   });
 
   // ---------------------------------------------------------------
   // Lobby
   // ---------------------------------------------------------------
-  var chosenSeat = null;
-  var lobbyPeers = {};
-  var peekChannel = null;
+  var chosenSeat = null, lobbyPeers = {}, peekChannel = null;
 
   function renderPick() {
     var pick = $("pick");
@@ -1880,32 +1160,27 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       var b = document.createElement("button");
       b.type = "button";
       b.disabled = taken;
+      b.dataset.seat = s.key;
       b.style.setProperty("--seat-color", "var(" + s.varName + ")");
       b.setAttribute("aria-pressed", String(chosenSeat === s.key));
-
       var dot = document.createElement("div");
       dot.className = "seat-dot";
       dot.textContent = taken ? (lobbyPeers[s.key].name || "?").charAt(0).toUpperCase() : String(i + 1);
       b.appendChild(dot);
-
       var sp = document.createElement("span");
       sp.textContent = taken ? (lobbyPeers[s.key].name || "upptagen") : "ledig";
       b.appendChild(sp);
-
       b.addEventListener("click", function () { chosenSeat = s.key; renderPick(); });
       pick.appendChild(b);
     });
   }
 
-  // Peek at the room before joining, so taken seats already read as
-  // taken. Sends "who" and collects the "hello" replies.
   function peekRoom(code) {
     var peek = client.channel("spelbordet-" + code);
     peek.on("broadcast", { event: "hello" }, function (m) {
       var p = m.payload || {};
       if (!p.seat || p.peer === peerId) return;
       lobbyPeers[p.seat] = p;
-      // Only move off a seat once someone is actually sitting on it.
       if (chosenSeat && lobbyPeers[chosenSeat]) {
         var free = firstFree(lobbyPeers);
         chosenSeat = free ? free.key : null;
@@ -1913,13 +1188,10 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       renderPick();
       var n = Object.keys(lobbyPeers).length;
       $("lobbyNote").textContent = n === 1
-        ? "En person sitter redan här."
-        : n + " personer sitter redan här.";
+        ? "En person sitter redan här." : n + " personer sitter redan här.";
     });
-    peek.subscribe(function (status) {
-      if (status === "SUBSCRIBED") {
-        peek.send({ type: "broadcast", event: "who", payload: { peer: peerId } });
-      }
+    peek.subscribe(function (s) {
+      if (s === "SUBSCRIBED") peek.send({ type: "broadcast", event: "who", payload: { peer: peerId } });
     });
     return peek;
   }
@@ -1933,28 +1205,6 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     return String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
   }
 
-  // Sit back down exactly where you were. A reload used to cost the
-  // position, the tile order and both special tiles.
-  function resumeIfPossible(room) {
-    var saved = loadState(room);
-    if (!saved) return false;
-    state.name = saved.name; state.room = saved.room; state.seat = saved.seat;
-    state.since = saved.since || Date.now();
-    state.pos = saved.pos || 0;
-    state.tiles = saved.tiles || [0, 1, 2, 3];
-    state.done = saved.done || [false, false, false, false];
-    state.dealt = typeof saved.dealt === "number" ? saved.dealt : -1;
-    state.zwap = saved.zwap !== false;
-    state.bezzers = typeof saved.bezzers === "number" ? saved.bezzers : 2;
-    state.turn = saved.turn || 0;
-    state.epoch = saved.epoch || 0;
-    state.jam = saved.jam && validJamUrl(saved.jam.url) ? saved.jam : null;
-    enterGame();
-    logLine("Du är tillbaka vid bordet.");
-    return true;
-  }
-
-  // Shared by joining and by resuming after a reload.
   function enterGame() {
     store("localStorage", "spelbordet.name", state.name);
     store("localStorage", "spelbordet.room", state.room);
@@ -1963,19 +1213,26 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     $("app").hidden = false;
     $("roomLabel").textContent = state.room;
     state.joined = true;
-    // Show myself at the table at once; the roster fills in the rest.
     state.peers[state.seat] = myPayload();
     buildBoard();
-    renderSeats();
-    renderMine();
-    renderPlate();
-    renderAttack();
-    renderFinish();
-    renderJam();
+    renderSeats(); renderMine(); renderPlate(); renderJam();
     requestAnimationFrame(renderPawns);
     connect();
     keepAwake();
     saveState();
+  }
+
+  function resumeIfPossible(room) {
+    var saved = loadState(room);
+    if (!saved) return false;
+    state.name = saved.name; state.room = saved.room; state.seat = saved.seat;
+    state.since = saved.since || Date.now();
+    state.pos = saved.pos || 0;
+    state.tiles = (saved.tiles && saved.tiles.length === 4) ? saved.tiles : [null, null, null, null];
+    state.jam = saved.jam && validJamUrl(saved.jam.url) ? saved.jam : null;
+    enterGame();
+    logLine("Du är tillbaka vid bordet.");
+    return true;
   }
 
   function initLobby() {
@@ -1985,9 +1242,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
     $("nameInput").value = store("localStorage", "spelbordet.name") || "";
     $("codeInput").value = code;
-    // Preselect seat 1 up front. The peek below only ever corrects this,
-    // so a slow or silent room never leaves the join button dead.
-    chosenSeat = SEATS[0].key;
+    chosenSeat = SEATS[0].key;   // förvalt direkt, så knappen aldrig låser sig
     renderPick();
     peekChannel = peekRoom(code);
 
@@ -2007,34 +1262,20 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       if (!name) { $("nameInput").focus(); toast("Skriv ditt namn först"); return; }
       if (room.length < 3) { $("codeInput").focus(); toast("Rumskoden är för kort"); return; }
       if (!chosenSeat) { toast("Bordet är fullt — prova en annan rumskod"); return; }
-
-      state.name = name;
-      state.room = room;
-      state.seat = chosenSeat;
+      state.name = name; state.room = room; state.seat = chosenSeat;
       state.since = Date.now();
-      store("localStorage", "spelbordet.name", name);
-      store("localStorage", "spelbordet.room", room);
-      history.replaceState(null, "", location.pathname + "?rum=" + room);
-
       if (peekChannel) client.removeChannel(peekChannel);
-      $("lobby").hidden = true;
-      $("app").hidden = false;
-      $("roomLabel").textContent = room;
-      state.joined = true;
-
       enterGame();
       logLine("Du satte dig vid bordet i rum <b>" + esc(room) + "</b>.");
     });
   }
 
-  // A game night is a lot of not touching the phone.
+  // En spelkväll är mycket icke-tryckande på telefonen.
   function keepAwake() {
     if (!("wakeLock" in navigator)) return;
     var lock = null;
     var request = function () {
-      navigator.wakeLock.request("screen")
-        .then(function (l) { lock = l; })
-        .catch(function () { /* denied — harmless */ });
+      navigator.wakeLock.request("screen").then(function (l) { lock = l; }).catch(function () {});
     };
     request();
     document.addEventListener("visibilitychange", function () {
@@ -2042,15 +1283,8 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     });
   }
 
-  // Heartbeat: keeps everyone on the roster, re-announces after a
-  // reconnect, and drops phones that have gone quiet.
-  setInterval(function () { if (state.joined) announce(); }, 5000);
-  setInterval(function () { if (state.joined) rebuildRoster(); }, 5000);
-
-  // No "bye" on pagehide: Android Chrome fires it whenever the tab is
-  // backgrounded, so glancing at a text message would announce that you
-  // left the table. Absence is left to the stale/gone timers instead.
-  // Coming back, though, must be instant — re-announce and re-ask.
+  // Inget "bye" när fliken bakgrundas: Android skickar det när man bara
+  // tittar på ett sms, och då ser de andra att man lämnat bordet.
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState !== "visible" || !state.joined) return;
     announce();
@@ -2060,13 +1294,21 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     rebuildRoster();
   });
 
+  setInterval(function () { if (state.joined) announce(); }, 5000);
+  setInterval(function () { if (state.joined) rebuildRoster(); }, 5000);
+
   var resizeTimer;
   window.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () { if (state.joined) renderPawns(); }, 120);
   });
 
-  initLobby();
+  if (!client) {
+    $("lobbyNote").textContent = "Kunde inte ladda realtidsbiblioteket. Kolla uppkopplingen och ladda om sidan.";
+    $("joinBtn").disabled = true;
+  } else {
+    initLobby();
+  }
 })();
 </script>
 </body>
