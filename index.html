@@ -67,15 +67,17 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .roomchip b{color:var(--ink); font-weight:500}
 .link-btn{
   background:var(--surface); border:1px solid var(--line); border-radius:9px;
-  padding:8px 11px; font-size:13px; font-weight:600; color:var(--ink-soft);
+  min-height:44px; padding:8px 12px; font-size:13px; font-weight:600; color:var(--ink-soft);
 }
+#jamToggle{min-width:44px}
 .link-btn:active{background:var(--surface-2)}
 
 /* ---------- Videon ----------
    Störst på skärmen, för det är den ni umgås genom. Allt annat får
    samsas om resten. */
 .stage{
-  position:relative; width:100%; flex:1; min-height:0;
+  position:relative; width:100%; flex:1; min-height:120px;
+  transition:max-height .28s cubic-bezier(.32,.72,0,1);
   border-radius:var(--radius); overflow:hidden;
   background:#04120C; border:1px solid var(--line-soft);
   box-shadow:var(--shadow);
@@ -102,19 +104,19 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 }
 .dock:active{cursor:grabbing}
 .dock-grip{
-  width:36px; height:4px; border-radius:2px; background:var(--line); flex:none;
+  width:40px; height:5px; border-radius:3px; background:#3E7A5C; flex:none;
 }
 .dock-plate{display:grid; grid-template-columns:repeat(4,1fr); gap:4px; width:100%}
 .dock-plate span{
-  position:relative; min-height:34px; padding:11px 3px 3px; border-radius:8px;
-  background:var(--surface); border:1px solid var(--line-soft);
+  position:relative; min-height:38px; padding:12px 3px 3px; border-radius:8px;
+  background:var(--surface); border:1px solid var(--line);
   font-size:10px; font-weight:600; line-height:1.1; color:var(--ink);
   display:flex; align-items:center; justify-content:center; text-align:center;
   overflow:hidden;
 }
 .dock-plate span::before{
   content:attr(data-p); position:absolute; top:2px; left:0; right:0;
-  font-family:var(--mono); font-size:8.5px; color:var(--brass);
+  font-family:var(--mono); font-size:10px; color:var(--brass);
 }
 .dock-plate span.tom{background:transparent; border-style:dashed; color:var(--ink-faint); font-weight:500}
 
@@ -122,7 +124,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .sheet{
   position:fixed; left:0; right:0; bottom:0; z-index:12;
   max-width:520px; margin:0 auto;
-  max-height:88svh; display:flex; flex-direction:column;
+  max-height:62svh; display:flex; flex-direction:column;
   background:var(--bg); border-top:1px solid var(--line);
   border-radius:18px 18px 0 0;
   box-shadow:0 -12px 40px -12px rgba(0,0,0,.85);
@@ -132,7 +134,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .sheet.open{transform:translateY(0)}
 .sheet-close{
   flex:none; display:flex; align-items:center; justify-content:center;
-  width:100%; padding:12px; border:none; background:transparent;
+  width:100%; min-height:46px; padding:20px 12px; border:none; background:transparent;
   touch-action:none; cursor:grab;
 }
 .sheet-close:active{cursor:grabbing}
@@ -281,7 +283,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 /* ---------- Flödet ---------- */
 .feed{
   background:transparent; border:none; padding:0 4px;
-  min-height:0; max-height:20px; overflow-y:auto;
+  min-height:0; max-height:74px; overflow-y:auto;
   display:flex; flex-direction:column; gap:4px;
 }
 .feed p{margin:0; font-size:12.5px; color:var(--ink-soft)}
@@ -331,7 +333,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .picker-head{display:flex; align-items:center; gap:8px}
 .picker-head p{margin:0; flex:1; font-size:12.5px; color:var(--ink-soft)}
 .picker-head b{color:var(--brass)}
-.picker-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; max-height:172px; overflow-y:auto}
+.picker-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; max-height:236px; overflow-y:auto}
 .picker-grid button{
   min-height:38px; padding:4px 3px; border-radius:7px;
   border:1px solid var(--line-soft); background:var(--surface);
@@ -370,8 +372,9 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .conn i{width:6px; height:6px; border-radius:50%; background:var(--ink-faint); display:block; flex:none}
 .conn.up i{background:var(--p1)}
 .conn.down i{background:var(--p3)}
+.reset-btn.armed{color:var(--p3); font-weight:700; text-decoration:none}
 .reset-btn{
-  background:none; border:none; padding:4px 0; font-size:11.5px;
+  background:none; border:none; min-height:44px; padding:4px 8px; font-size:12px;
   color:var(--ink-faint); text-decoration:underline; text-underline-offset:2px;
 }
 
@@ -456,7 +459,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   </div>
 
   <div class="dock" id="sheetToggle" role="button" tabindex="0"
-       aria-expanded="false" aria-controls="sheet" aria-label="Din bricka — dra upp för hela bordet">
+       aria-expanded="false" aria-controls="sheet">
     <span class="dock-grip" aria-hidden="true"></span>
     <div class="dock-plate" id="dockPlate"></div>
   </div>
@@ -464,7 +467,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
 <!-- Spelet ligger som ett blad över videon: den fortsätter bakom, så
      ni är tillbaka i samtalet så fort bladet stängs. -->
-<section class="sheet" id="sheet" aria-label="Spelet">
+<section class="sheet" id="sheet" aria-label="Spelet" inert aria-hidden="true">
   <button class="sheet-close" id="sheetClose" aria-label="Tillbaka till samtalet">
     <span class="dock-grip" aria-hidden="true"></span>
   </button>
@@ -472,7 +475,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   <div class="sheet-body">
     <div class="seats" id="seats"></div>
 
-    <div class="feed" id="feed"></div>
+    <div class="feed" id="feed" role="log" aria-live="polite"></div>
 
     <div class="mine" id="mine">
       <div class="mine-head">
@@ -494,6 +497,8 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         <button class="quiet" id="pickerClear">Töm platsen</button>
       </div>
 
+      <button class="quiet" id="newTilesBtn">Nya brickor</button>
+
       <div class="steps" id="steps" role="group" aria-label="Antal steg">
         <span class="steps-label">Steg</span>
         <button class="step" data-step="1" aria-pressed="true">1</button>
@@ -514,7 +519,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       </p>
 
       <div class="mine-foot">
-        <div class="conn" id="conn"><i></i><span>ansluter…</span></div>
+        <div class="conn" id="conn" role="status"><i></i><span>ansluter…</span></div>
         <button class="board-toggle" id="boardToggle" aria-expanded="false" aria-controls="boardWrap">
           <span>Banan</span><i aria-hidden="true">▾</i>
         </button>
@@ -554,7 +559,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -584,7 +589,9 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     "Vetenskap", "Sport och spel", "Teknik", "Traditioner och tro", "TV och radio"
   ];
 
-  var STALE_MS = 12000, GONE_MS = 90000;
+  // 90 s tog bort någon som gick och hämtade kaffe — brickorna
+  // ligger kvar på ett riktigt bord.
+  var STALE_MS = 12000, GONE_MS = 600000;
 
   function $(id) { return document.getElementById(id); }
   function esc(s) {
@@ -612,7 +619,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     pos: 0,
     tiles: [null, null, null, null],   // kategoriindex per poängplats
     step: 1,
-    jam: null,
+    jam: null, resetAt: 0,
     peers: {}, channel: null, connected: false, joined: false
   };
 
@@ -698,9 +705,35 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   function setSheetOpen(open) {
     $("sheet").classList.toggle("open", open);
     $("sheetToggle").setAttribute("aria-expanded", String(open));
-    if (!open) setBoardOpen(false);
+    // Stängt blad ska inte ligga kvar i tabbordningen — det gav 14
+    // osynliga fokusstopp, även i lobbyn.
+    $("sheet").inert = !open;
+    $("sheet").setAttribute("aria-hidden", String(!open));
+    if (!open) {
+      setBoardOpen(false);
+      // Som att lyfta handen från brickan: inget ligger kvar armerat.
+      pickedSlot = null;
+      closePicker();
+      renderPlate();
+    }
+    // Videon ska klämmas ihop, inte täckas — annars lägger videotjänsten
+    // fortfarande ut fyra rutor för full höjd och de två nedersta hamnar
+    // bakom bladet. Sätts synkront: bladets höjd finns även när det är
+    // stängt (det är bara translateY), och transitionen ska börja nu.
+    // Krymp videon precis så mycket att den slutar ovanför bladets
+    // överkant — då är alla fyra ansikten kvar i stället för att de två
+    // nedersta hamnar bakom. Räknat mot faktiska positioner: en
+    // procentsats av apphöjden träffar fel eftersom toppraden ligger över.
+    var stage = $("stage");
     if (open) {
-      // Brickorna sitter i bladet och har rects först när det är uppe.
+      var sheetTop = window.innerHeight - $("sheet").getBoundingClientRect().height;
+      var stageTop = stage.getBoundingClientRect().top;
+      stage.style.maxHeight = Math.max(120, Math.round(sheetTop - stageTop - 8)) + "px";
+    } else {
+      stage.style.maxHeight = "";
+    }
+    if (open) {
+      // Brickorna har rects först när bladet är uppe.
       requestAnimationFrame(function () { renderPlate(); renderSeats(); });
     }
   }
@@ -717,21 +750,38 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   }
   function dragMove(e) {
     if (!drag) return;
+    var prev = drag.moved;
     drag.moved = e.clientY - drag.y;
+    drag.lastDy = drag.moved - prev;
+    drag.lastT = Date.now();
     var h = sheetHeight();
     // Från stängt räknas nedåt som noll, och tvärtom — bladet ska aldrig
     // dras längre än till sina två lägen.
     var offset = drag.from ? Math.max(0, drag.moved) : h + Math.min(0, drag.moved);
     $("sheet").style.transform = "translateY(" + offset + "px)";
   }
+  function dragCancel() {
+    if (!drag) return;
+    $("sheet").classList.remove("dragging");
+    $("sheet").style.transform = "";
+    setSheetOpen(drag.from);   // tillbaka dit man kom ifrån
+    drag = null;
+  }
+
   function dragEnd() {
     if (!drag) return;
     var h = sheetHeight(), moved = drag.moved, from = drag.from;
     $("sheet").classList.remove("dragging");
     $("sheet").style.transform = "";
-    // Kort rörelse = ett tryck: växla. Längre = dit man drog.
-    var open = Math.abs(moved) < 12 ? !from
-             : (from ? moved < h * 0.28 : -moved > 44);
+    // Kort rörelse = ett tryck: växla. Annars dit man drog — och
+    // samtalet ska vara det billiga läget att återvända till, inte
+    // tvärtom som det var förut (44px ut, 140px hem).
+    var dt = Date.now() - (drag.lastT || Date.now());
+    var fart = dt > 0 && dt < 120 ? (drag.lastDy || 0) / dt : 0;
+    var open;
+    if (Math.abs(moved) < 22) open = !from;                 // tryck
+    else if (Math.abs(fart) > 0.45) open = fart < 0;        // flick
+    else open = from ? moved < h * 0.16 : -moved > 64;
     setSheetOpen(open);
     drag = null;
   }
@@ -740,16 +790,18 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     el.addEventListener("pointerdown", dragStart);
     el.addEventListener("pointermove", dragMove);
     el.addEventListener("pointerup", dragEnd);
-    el.addEventListener("pointercancel", dragEnd);
+    el.addEventListener("pointercancel", dragCancel);
+    el.addEventListener("lostpointercapture", dragCancel);
+  });
+  // Enter/Space på en knapp ger click, aldrig pointer-events — utan
+  // detta var stängknappen död för tangentbord.
+  $("sheetClose").addEventListener("click", function () {
+    if (!drag) setSheetOpen(false);
   });
   $("sheetToggle").addEventListener("keydown", function (e) {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSheetOpen(!sheetOpen()); }
   });
 
-  // Att titta upp igen görs genom att titta på ansiktena.
-  $("stage").addEventListener("click", function () {
-    if (sheetOpen() && !boardOpen()) setSheetOpen(false);
-  });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && sheetOpen() && !boardOpen()) setSheetOpen(false);
   });
@@ -759,14 +811,24 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     var el = $("dockPlate");
     if (!el) return;
     el.innerHTML = "";
+    var lasta = [];
     for (var slot = 0; slot < 4; slot++) {
       var sp = document.createElement("span");
       sp.dataset.p = (slot + 1) + "p";
       var cat = state.seat && state.tiles[slot] != null ? CATEGORIES[state.tiles[slot]] : null;
-      if (cat) sp.textContent = cat.split(" ")[0];
-      else { sp.textContent = "—"; sp.className = "tom"; }
+      if (cat) {
+        sp.textContent = cat.split(" ")[0];   // plats för fyra på en rad
+        sp.title = (slot + 1) + "p: " + cat;  // hela namnet vid långtryck
+        lasta.push((slot + 1) + " poäng " + cat);
+      } else {
+        sp.textContent = "—"; sp.className = "tom";
+        lasta.push((slot + 1) + " poäng tom");
+      }
       el.appendChild(sp);
     }
+    // Utan detta läste skärmläsaren bara etiketten, aldrig brickan.
+    $("sheetToggle").setAttribute("aria-label",
+      "Din bricka: " + lasta.join(", ") + ". Dra upp för hela bordet.");
   }
 
   function setBoardOpen(open) {
@@ -910,13 +972,19 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     }
   }
 
+  // Sorterad vy, men indexen är identiteten i payloaden — sortera aldrig
+  // CATEGORIES självt, då pekar allas brickor plötsligt på fel sak.
+  var CAT_ORDER = CATEGORIES.map(function (n, i) { return i; })
+    .sort(function (a, b) { return CATEGORIES[a].localeCompare(CATEGORIES[b], "sv"); });
+
   function openPicker(slot) {
     pickerSlot = slot;
     pickedSlot = null;
     $("pickerSlot").textContent = "plats " + (slot + 1);
     var grid = $("pickerGrid");
     grid.innerHTML = "";
-    CATEGORIES.forEach(function (name, i) {
+    CAT_ORDER.forEach(function (i) {
+      var name = CATEGORIES[i];
       var b = document.createElement("button");
       b.type = "button";
       b.textContent = name;
@@ -924,9 +992,10 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       b.disabled = usedAt !== -1 && usedAt !== slot;   // redan på min bricka
       b.addEventListener("click", function () {
         state.tiles[slot] = i;
-        closePicker();
         announce();
         renderPlate(); renderSeats(); renderDock();
+        var nasta = nextEmptySlot();
+        if (nasta === -1) closePicker(); else openPicker(nasta);
       });
       grid.appendChild(b);
     });
@@ -955,6 +1024,22 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     pickedSlot = null;
     announce();
     renderPlate(); renderSeats(); renderDock();
+  });
+
+  // Efter varje val: hoppa till nästa tomma plats. En ny runda blir då
+  // fem tryck i stället för tolv.
+  function nextEmptySlot() {
+    for (var i = 0; i < 4; i++) if (state.tiles[i] == null) return i;
+    return -1;
+  }
+
+  $("newTilesBtn").addEventListener("click", function () {
+    if (!state.seat) return;
+    state.tiles = [null, null, null, null];
+    pickedSlot = null;
+    announce();
+    renderPlate(); renderSeats(); renderDock();
+    openPicker(0);
   });
 
   $("pickerClose").addEventListener("click", closePicker);
@@ -1031,7 +1116,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
   }
   function knock(fromSeat) {
-    var targets = [];
+    var targets = [$("sheetToggle")];   // det enda som alltid syns
     var seatEl = seatsEl.querySelector('[data-seat="' + fromSeat + '"]');
     if (seatEl) targets.push(seatEl);
     targets.push($("boardWrap"));
@@ -1041,23 +1126,17 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   }
 
   // ---------------------------------------------------------------
-  // Videon — Jitsi Meet i en iframe.
+  // Videon — Daily.co, ett fast rum.
   //
-  // Egen WebRTC hade gett snyggare rutor, men fyra telefoner i två
-  // hushåll behöver ofta en TURN-server för att ens koppla upp, och
-  // det felet dyker upp precis när ni satt er. Jitsi har löst det.
+  // Låg meet.jit.si förut, men den publika instansen sätter
+  // disableIframeAPI:true och kastar ut inbäddade samtal efter fem
+  // minuter — plus att den kräver inloggat konto för att skapa rum.
+  // Daily-rummet är statiskt: ingen nyckel i koden, ingen backend.
   // ---------------------------------------------------------------
-  var jitsi = null, jitsiTried = false;
+  // Skapa ett rum på daily.co och klistra in dess adress här.
+  var DAILY_ROOM = "";
 
-  // Rumsnamnet är öppet för vem som helst som gissar det på meet.jit.si,
-  // så det härleds ur rumskoden i stället för att vara den.
-  function jitsiRoomName(code) {
-    var h = 2166136261, s = "spelbordet:" + code;
-    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
-    var h2 = 5381;
-    for (var j = s.length - 1; j >= 0; j--) { h2 = ((h2 * 33) ^ s.charCodeAt(j)) >>> 0; }
-    return "spelbordet-" + code.toLowerCase() + "-" + h.toString(36) + h2.toString(36);
-  }
+  var videoFrame = null;
 
   function stageMessage(text, btnText, onClick) {
     var f = $("stageFallback");
@@ -1076,75 +1155,53 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     }
   }
 
-  function startVideo() {
-    if (jitsi || jitsiTried) return;
-    jitsiTried = true;
-    stageMessage("Startar videon…");
+  function validRoomUrl(raw) {
+    var v = String(raw || "").trim();
+    if (!v) return null;
+    if (!/^https?:\/\//i.test(v)) v = "https://" + v;
+    try {
+      var u = new URL(v);
+      if (u.protocol !== "https:") return null;
+      return u.hostname.toLowerCase().endsWith(".daily.co") ? u.href : null;
+    } catch (e) { return null; }
+  }
 
-    var script = document.createElement("script");
-    script.src = "https://meet.jit.si/external_api.js";
-    script.async = true;
-    script.onerror = function () {
-      stageMessage("Videon kunde inte laddas. Ni kan spela ändå — eller försöka igen.",
-        "Försök igen", function () { jitsiTried = false; jitsi = null; startVideo(); });
-    };
-    script.onload = function () {
-      if (typeof window.JitsiMeetExternalAPI !== "function") {
-        stageMessage("Videon kunde inte startas.", "Försök igen",
-          function () { jitsiTried = false; startVideo(); });
-        return;
-      }
-      try {
-        jitsi = new window.JitsiMeetExternalAPI("meet.jit.si", {
-          roomName: jitsiRoomName(state.room),
-          parentNode: $("stage"),
-          userInfo: { displayName: state.name },
-          configOverwrite: {
-            prejoinPageEnabled: false,      // ni är redan vid bordet
-            disableDeepLinking: true,       // stanna i webbläsaren
-            startWithAudioMuted: false,
-            startWithVideoMuted: false,
-            disableModeratorIndicator: true,
-            disableReactions: true,
-            toolbarButtons: ["microphone", "camera", "tileview", "hangup"]
-          },
-          interfaceConfigOverwrite: {
-            TILE_VIEW_MAX_COLUMNS: 2,       // fyra rutor i ett 2x2
-            SHOW_JITSI_WATERMARK: false,
-            SHOW_WATERMARK_FOR_GUESTS: false,
-            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
-            MOBILE_APP_PROMO: false,
-            DEFAULT_BACKGROUND: "#04120C"
-          }
-        });
-        jitsi.addListener("videoConferenceJoined", function () {
-          $("stageFallback").hidden = true;
-          try { jitsi.executeCommand("setTileView", true); } catch (e) {}
-        });
-        // Kliv undan även om anslutningen dröjer eller kameran nekas —
-        // Jitsi förklarar sådant bättre i sitt eget gränssnitt än min
-        // overlay gör genom att ligga kvar ovanpå det.
-        setTimeout(function () {
-          if (jitsi) $("stageFallback").hidden = true;
-        }, 2500);
-        jitsi.addListener("readyToClose", function () {
-          stopVideo();
-          stageMessage("Du lämnade videon.", "Anslut igen",
-            function () { jitsiTried = false; startVideo(); });
-        });
-      } catch (e) {
-        stageMessage("Videon kunde inte startas: " + (e && e.message ? e.message : "okänt fel"),
-          "Försök igen", function () { jitsiTried = false; jitsi = null; startVideo(); });
-      }
-    };
-    document.head.appendChild(script);
+  function roomUrl() {
+    var fromUrl = new URLSearchParams(location.search).get("video");
+    return validRoomUrl(fromUrl) || validRoomUrl(DAILY_ROOM);
+  }
+
+  function startVideo() {
+    if (videoFrame) return;
+    var url = roomUrl();
+    if (!url) {
+      stageMessage("Videorummet är inte inställt ännu. Skapa ett rum på daily.co "
+        + "och lägg adressen i DAILY_ROOM i index.html — eller lägg den i länken "
+        + "som ?video=…");
+      return;
+    }
+    stageMessage("Startar videon…");
+    var f = document.createElement("iframe");
+    f.title = "Videosamtal";
+    f.allow = "camera; microphone; autoplay; display-capture; fullscreen; speaker-selection";
+    f.setAttribute("allowfullscreen", "true");
+    // Namnet följer med in i rummet så de andra ser vem som är vem.
+    f.src = url + (url.indexOf("?") === -1 ? "?" : "&")
+          + "userName=" + encodeURIComponent(state.name || "Gäst");
+    f.addEventListener("load", function () { $("stageFallback").hidden = true; });
+    f.addEventListener("error", function () {
+      stageMessage("Videon kunde inte laddas.", "Försök igen",
+        function () { stopVideo(); startVideo(); });
+    });
+    $("stage").appendChild(f);
+    videoFrame = f;
   }
 
   function stopVideo() {
-    if (!jitsi) return;
-    try { jitsi.dispose(); } catch (e) {}
-    jitsi = null;
-    jitsiTried = false;
+    if (!videoFrame) return;
+    videoFrame.src = "about:blank";
+    videoFrame.remove();
+    videoFrame = null;
   }
 
   // ---------------------------------------------------------------
@@ -1192,6 +1249,10 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
   function renderJam() {
     var body = $("jamBody");
+    // Rör inte fältet medan någon skriver i det. Rostret ritas om vid
+    // varje inkommande hello, och innan detta tömdes inputen inom en
+    // sekund — man hann inte klistra in en länk.
+    if (jamEditing && $("jamInput")) return;
     body.innerHTML = "";
     var jam = liveJam();
     // Tar ingen höjd när det inte är någon musik igång — med videon
@@ -1278,7 +1339,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     return {
       peer: peerId, seat: state.seat, name: state.name,
       pos: state.pos, tiles: state.tiles, jam: state.jam,
-      since: state.since, beat: Date.now()
+      since: state.since, beat: Date.now(), resetAt: state.resetAt
     };
   }
 
@@ -1330,6 +1391,13 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         if (hs < ps || (hs === ps && held.peer < p.peer)) return;
       }
       next[p.seat] = p;
+      // En nyare nollställning än min egen: någon nollställde medan jag
+      // var bakgrundad. Utan detta skrev min nästa hello tillbaka det
+      // gamla bordet till alla andra.
+      if ((p.resetAt || 0) > state.resetAt) {
+        state.resetAt = p.resetAt;
+        setTimeout(function () { applyReset(esc(p.name || "Någon")); }, 0);
+      }
     });
 
     if (state.seat && next[state.seat] && next[state.seat].peer !== peerId) {
@@ -1343,6 +1411,10 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       } else {
         state.seat = null;
         delete roster[peerId];
+        // Utan detta ligger gamla platsen kvar i sessionStorage med sin
+        // ursprungliga since — och "Försök igen" tog då platsen från den
+        // som faktiskt vunnit den.
+        clearState();
         toast("Bordet är fullt");
       }
     }
@@ -1405,7 +1477,8 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         var d = m.payload || {};
         knock(d.seat);
         logLine("<b>" + esc(d.name) + "</b> knackade på bordet.");
-        buzz(30);
+        toast((d.name || "Någon") + " knackar");
+        buzz([40, 60, 40]);
       })
       .on("broadcast", { event: "jam" }, function (m) {
         var d = m.payload || {};
@@ -1414,7 +1487,11 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         renderJam();
       })
       .on("broadcast", { event: "reset" }, function (m) {
-        applyReset(esc((m.payload || {}).by || "Någon"));
+        var d = m.payload || {};
+        var at = d.at || Date.now();
+        if (at <= state.resetAt) return;
+        state.resetAt = at;
+        applyReset(esc(d.by || "Någon"));
       })
       .subscribe(function (status) {
         if (status === "SUBSCRIBED") {
@@ -1474,10 +1551,27 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       payload: { seat: state.seat, name: state.name }
     });
   });
+  var resetArmed = 0;
   $("resetBtn").addEventListener("click", function () {
     if (!state.channel) return;
+    var nu = Date.now();
+    if (nu - resetArmed > 3000) {          // ett tryck raderar allas bord
+      resetArmed = nu;
+      this.textContent = "Säkert? Nollställ allt";
+      this.classList.add("armed");
+      var self = this;
+      setTimeout(function () {
+        if (Date.now() - resetArmed >= 3000) {
+          self.textContent = "Nollställ"; self.classList.remove("armed");
+        }
+      }, 3100);
+      return;
+    }
+    resetArmed = 0;
+    this.textContent = "Nollställ"; this.classList.remove("armed");
+    state.resetAt = nu;
     applyReset("Du");
-    state.channel.send({ type: "broadcast", event: "reset", payload: { by: state.name } });
+    state.channel.send({ type: "broadcast", event: "reset", payload: { by: state.name, at: nu } });
   });
   $("rejoinBtn").addEventListener("click", function () { location.reload(); });
   $("leaveBtn").addEventListener("click", function () {

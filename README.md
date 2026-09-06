@@ -54,12 +54,20 @@ vill se pjäserna mot varandra.
 
 ## Videon
 
-Jitsi Meet, inbäddad. Rumsnamnet härleds ur rumskoden i stället för att
-vara den, så bordet inte går att ramla in i på meet.jit.si genom att gissa.
+Daily.co, ett fast rum inbäddat i en iframe.
 
-Egen WebRTC hade gett snyggare rutor, men fyra telefoner i två hushåll
-behöver ofta en TURN-server för att alls koppla upp — och det felet
-dyker upp precis när ni satt er för att spela.
+**Innan första kvällen:** skapa ett rum på daily.co och lägg adressen i
+`DAILY_ROOM` högst upp i skriptet — eller skicka den i länken som
+`?video=https://…daily.co/rummet`. Utan den säger appen till.
+
+Låg först på meet.jit.si, men den publika instansen sätter
+`disableIframeAPI: true` och **kastar ut inbäddade samtal efter fem
+minuter**, plus att den kräver inloggat konto för att skapa rum. Ett
+parti på 45 minuter gick alltså inte att genomföra.
+
+Egen WebRTC valdes bort tidigare: fyra telefoner i två hushåll behöver
+ofta en TURN-server för att alls koppla upp, och det felet dyker upp
+precis när ni satt er för att spela.
 
 ## Teknik
 
