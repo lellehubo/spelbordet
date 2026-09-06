@@ -28,13 +28,22 @@ svar var värt. Appen visar bara det ni annars inte kan se hos varandra:
   ni valt. Plats 1 är värd 1 poäng, plats 4 är värd 4.
 - **Allas brickor** öppet, samtidigt, på varje telefon
 - **Pjäserna** på banan — du flyttar din egen, valfritt antal steg
-- **Videon** — alla fyra i bild medan ni spelar. Det är den appen
-  finns för; allt annat samsas om resten av skärmen.
+- **Videon** — alla fyra i bild, i stort sett hela skärmen. Det är
+  huvudupplevelsen; spelet fälls fram när ni vill se det.
 - **Vem som är där** just nu
 - En knackning på bordet, och en delad Spotify Jam-länk
 
 ZWAP och BEZZERWIZZER hanterar ni med de fysiska brickorna och rösten,
 precis som när ni sitter i samma rum.
+
+## Två lägen
+
+**Samtalet** är utgångsläget: videon fyller skärmen. Längst ner sitter ett
+handtag som visar var alla står på banan.
+
+**Spelet** dras upp som ett blad över videon — brickor, kontroller, allas
+plattor. Videon ligger kvar bakom, så ni är tillbaka i samtalet så fort
+bladet stängs. Banan öppnas i sin tur som ett eget lager ovanpå bladet.
 
 ## Videon
 

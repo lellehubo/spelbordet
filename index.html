@@ -47,10 +47,12 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 [hidden]{display:none !important}
 .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
 
+/* Videon ÄR appen: den fyller skärmen och scrollar aldrig. Spelet
+   ligger i ett blad som glider upp över den. */
 .app{
-  max-width:520px; margin:0 auto; min-height:100svh;
+  max-width:520px; margin:0 auto; height:100svh; overflow:hidden;
   display:flex; flex-direction:column; gap:8px;
-  padding:0 14px calc(14px + env(safe-area-inset-bottom));
+  padding:0 14px calc(10px + env(safe-area-inset-bottom));
 }
 
 /* ---------- Topprad ---------- */
@@ -73,7 +75,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
    Störst på skärmen, för det är den ni umgås genom. Allt annat får
    samsas om resten. */
 .stage{
-  position:relative; width:100%; height:35vh; min-height:180px;
+  position:relative; width:100%; flex:1; min-height:0;
   border-radius:var(--radius); overflow:hidden;
   background:#04120C; border:1px solid var(--line-soft);
   box-shadow:var(--shadow);
@@ -89,6 +91,43 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   min-height:44px; padding:0 18px; border-radius:10px;
   border:1.5px solid var(--brass); background:transparent;
   color:var(--brass); font-weight:700; font-size:14px;
+}
+
+/* Handtaget: enda spåret av spelet när ni bara pratar. */
+.dock{
+  flex:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+  width:100%; padding:7px 12px 8px; border-radius:12px;
+  border:1px solid var(--line-soft); background:var(--surface);
+}
+.dock-grip{
+  width:34px; height:4px; border-radius:2px; background:var(--line); flex:none;
+}
+.dock-label{font-family:var(--display); font-weight:700; font-size:13.5px; color:var(--ink)}
+.dock-hint{
+  font-family:var(--mono); font-size:10px; color:var(--ink-faint);
+  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* ---------- Spelbladet ---------- */
+.sheet{
+  position:fixed; left:0; right:0; bottom:0; z-index:12;
+  max-width:520px; margin:0 auto;
+  max-height:88svh; display:flex; flex-direction:column;
+  background:var(--bg); border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;
+  box-shadow:0 -12px 40px -12px rgba(0,0,0,.85);
+  transform:translateY(101%); transition:transform .28s cubic-bezier(.32,.72,0,1);
+  will-change:transform;
+}
+.sheet.open{transform:translateY(0)}
+.sheet-close{
+  flex:none; display:flex; flex-direction:column; align-items:center; gap:4px;
+  width:100%; padding:10px 12px 8px; border:none; background:transparent;
+  font-size:12px; font-weight:600; color:var(--ink-faint);
+}
+.sheet-body{
+  overflow-y:auto; padding:0 14px calc(14px + env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; gap:9px;
 }
 
 /* ---------- Jam ---------- */
@@ -177,7 +216,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
    att låna, och en liten inklämd ring är ingen spelplan. Så här får den
    vara stor när ni tittar på den, och helt ur vägen annars. */
 .board-wrap{
-  position:fixed; inset:0; z-index:15;
+  position:fixed; inset:0; z-index:18;
   background:var(--bg);   /* solid: videons ljusa UI lyser igenom allt annat */
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:14px; padding:20px;
@@ -238,7 +277,6 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
 /* ---------- Min panel ---------- */
 .mine{
-  margin-top:auto; position:sticky; bottom:0; z-index:5;
   background:var(--surface);
   border:1px solid var(--line); border-top:3px solid var(--my-color,var(--line));
   border-radius:var(--radius);
@@ -394,75 +432,92 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     <button class="link-btn" id="leaveBtn">Lämna</button>
   </div>
 
+  <div class="jam" id="jamBar" hidden>
+    <span class="jam-icon" aria-hidden="true">&#9834;</span>
+    <div class="jam-body" id="jamBody"></div>
+  </div>
+
   <div class="stage" id="stage">
     <div class="stage-fallback" id="stageFallback">
       <p>Startar videon…</p>
     </div>
   </div>
 
-  <div class="jam" id="jamBar" hidden>
-    <span class="jam-icon" aria-hidden="true">&#9834;</span>
-    <div class="jam-body" id="jamBody"></div>
-  </div>
+  <button class="dock" id="sheetToggle" aria-expanded="false" aria-controls="sheet">
+    <span class="dock-grip" aria-hidden="true"></span>
+    <span class="dock-label">Spelet</span>
+    <span class="dock-hint" id="dockHint"></span>
+  </button>
+</div>
 
-  <div class="seats" id="seats"></div>
+<!-- Spelet ligger som ett blad över videon: den fortsätter bakom, så
+     ni är tillbaka i samtalet så fort bladet stängs. -->
+<section class="sheet" id="sheet" aria-label="Spelet">
+  <button class="sheet-close" id="sheetClose">
+    <span class="dock-grip" aria-hidden="true"></span>
+    <span>Tillbaka till samtalet</span>
+  </button>
 
-  <div class="board-wrap" id="boardWrap" hidden>
-    <h2 class="sr-only">Banan</h2>
-    <div class="board" id="board"></div>
-    <div class="pawns" id="pawns"></div>
-    <button class="board-close" id="boardClose">Stäng banan</button>
-  </div>
+  <div class="sheet-body">
+    <div class="seats" id="seats"></div>
 
-  <div class="feed" id="feed"></div>
+    <div class="feed" id="feed"></div>
 
-  <section class="mine" id="mine">
-    <div class="mine-head">
-      <div class="seat-dot" id="myDot">?</div>
-      <div class="mine-id">
-        <strong id="myName">—</strong>
-        <small id="myPos">på startrutan</small>
+    <div class="mine" id="mine">
+      <div class="mine-head">
+        <div class="seat-dot" id="myDot">?</div>
+        <div class="mine-id">
+          <strong id="myName">—</strong>
+          <small id="myPos">på startrutan</small>
+        </div>
+      </div>
+
+      <div class="plate" id="plate" role="group" aria-label="Din bricka"></div>
+
+      <div class="picker" id="picker" hidden>
+        <div class="picker-head">
+          <p>Vad la du på <b id="pickerSlot">plats 1</b>?</p>
+          <button class="quiet" id="pickerClose" style="padding:0 12px">Stäng</button>
+        </div>
+        <div class="picker-grid" id="pickerGrid"></div>
+        <button class="quiet" id="pickerClear">Töm platsen</button>
+      </div>
+
+      <div class="steps" id="steps" role="group" aria-label="Antal steg">
+        <span class="steps-label">Steg</span>
+        <button class="step" data-step="1" aria-pressed="true">1</button>
+        <button class="step" data-step="2" aria-pressed="false">2</button>
+        <button class="step" data-step="3" aria-pressed="false">3</button>
+        <button class="step" data-step="4" aria-pressed="false">4</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ghost" id="backBtn" aria-label="Ett steg tillbaka">&minus;</button>
+        <button class="btn btn-primary" id="moveBtn">Flytta 1 steg</button>
+        <button class="btn btn-ghost" id="knockBtn" aria-label="Knacka på bordet">&#9995;</button>
+      </div>
+
+      <p class="seatless-note" id="seatlessNote" hidden>
+        Bordet är fullt — någon annan tog din plats.
+        <button id="rejoinBtn">Försök igen</button>
+      </p>
+
+      <div class="mine-foot">
+        <div class="conn" id="conn"><i></i><span>ansluter…</span></div>
+        <button class="board-toggle" id="boardToggle" aria-expanded="false" aria-controls="boardWrap">
+          <span>Banan</span><i aria-hidden="true">▾</i>
+        </button>
+        <button class="reset-btn" id="resetBtn">Nollställ</button>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="plate" id="plate" role="group" aria-label="Din bricka"></div>
-
-    <div class="picker" id="picker" hidden>
-      <div class="picker-head">
-        <p>Vad la du på <b id="pickerSlot">plats 1</b>?</p>
-        <button class="quiet" id="pickerClose" style="padding:0 12px">Stäng</button>
-      </div>
-      <div class="picker-grid" id="pickerGrid"></div>
-      <button class="quiet" id="pickerClear">Töm platsen</button>
-    </div>
-
-    <div class="steps" id="steps" role="group" aria-label="Antal steg">
-      <span class="steps-label">Steg</span>
-      <button class="step" data-step="1" aria-pressed="true">1</button>
-      <button class="step" data-step="2" aria-pressed="false">2</button>
-      <button class="step" data-step="3" aria-pressed="false">3</button>
-      <button class="step" data-step="4" aria-pressed="false">4</button>
-    </div>
-
-    <div class="actions">
-      <button class="btn btn-ghost" id="backBtn" aria-label="Ett steg tillbaka">&minus;</button>
-      <button class="btn btn-primary" id="moveBtn">Flytta 1 steg</button>
-      <button class="btn btn-ghost" id="knockBtn" aria-label="Knacka på bordet">&#9995;</button>
-    </div>
-
-    <p class="seatless-note" id="seatlessNote" hidden>
-      Bordet är fullt — någon annan tog din plats.
-      <button id="rejoinBtn">Försök igen</button>
-    </p>
-
-    <div class="mine-foot">
-      <div class="conn" id="conn"><i></i><span>ansluter…</span></div>
-      <button class="board-toggle" id="boardToggle" aria-expanded="false" aria-controls="boardWrap">
-        <span>Banan</span><i aria-hidden="true">▾</i>
-      </button>
-      <button class="reset-btn" id="resetBtn">Nollställ</button>
-    </div>
-  </section>
+<div class="board-wrap" id="boardWrap" hidden>
+  <h2 class="sr-only">Banan</h2>
+  <div class="board" id="board"></div>
+  <div class="pawns" id="pawns"></div>
+  <button class="board-close" id="boardClose">Stäng banan</button>
 </div>
 
 <div class="lobby" id="lobby">
@@ -624,7 +679,36 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
   // Positionerna står i varje lagrad, så knappen behöver ingen egen
   // sammanfattning — den skulle bara ta höjd från lagraderna.
-  function renderBoardSummary() {}
+  function renderBoardSummary() { renderDock(); }
+
+  // --- Spelbladet ---------------------------------------------------
+  function sheetOpen() { return $("sheet").classList.contains("open"); }
+
+  function setSheetOpen(open) {
+    $("sheet").classList.toggle("open", open);
+    $("sheetToggle").setAttribute("aria-expanded", String(open));
+    if (!open) setBoardOpen(false);
+    if (open) {
+      // Brickorna sitter i bladet och har rects först när det är uppe.
+      requestAnimationFrame(function () { renderPlate(); renderSeats(); });
+    }
+  }
+  $("sheetToggle").addEventListener("click", function () { setSheetOpen(true); });
+  $("sheetClose").addEventListener("click", function () { setSheetOpen(false); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && sheetOpen() && !boardOpen()) setSheetOpen(false);
+  });
+
+  // Handtaget bär det lilla man vill veta utan att öppna något.
+  function renderDock() {
+    var bits = [];
+    SEATS.forEach(function (s) {
+      var p = state.peers[s.key];
+      if (!p) return;
+      bits.push((p.name || "?").split(" ")[0] + " " + ((p.pos | 0) > 0 ? (p.pos | 0) : "start"));
+    });
+    $("dockHint").textContent = bits.join(" · ");
+  }
 
   function setBoardOpen(open) {
     $("boardWrap").hidden = !open;
