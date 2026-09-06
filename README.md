@@ -56,9 +56,15 @@ vill se pjäserna mot varandra.
 
 Daily.co, ett fast rum inbäddat i en iframe.
 
-**Innan första kvällen:** skapa ett rum på daily.co och lägg adressen i
-`DAILY_ROOM` högst upp i skriptet — eller skicka den i länken som
-`?video=https://…daily.co/rummet`. Utan den säger appen till.
+Rummet är `https://lellehubo.daily.co/Sportboll`, satt i `DAILY_ROOM`
+högst upp i skriptet. Det måste vara **Public** i Dailys panel — ett
+privat rum med knocking kräver att ägaren är inne och släpper in var och
+en. Ett annat rum kan testas med `?video=https://…daily.co/rummet`.
+
+Namnet skrivs i Dailys egen förhandsruta (Prebuilt läser inte `userName`
+ur URL:en). Samma ruta är stället att stänga av mikrofonen på — vilket
+den ena av två telefoner i samma rum måste göra, annars blir det
+rundgång.
 
 Låg först på meet.jit.si, men den publika instansen sätter
 `disableIframeAPI: true` och **kastar ut inbäddade samtal efter fem
