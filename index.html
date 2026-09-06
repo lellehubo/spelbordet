@@ -421,6 +421,11 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .pick button:disabled{opacity:.42}
 .lobby .btn-primary{--my-color:var(--brass); color:var(--on-brass); padding:15px; font-size:16px}
 .lobby-note{font-size:12px; color:var(--ink-faint); line-height:1.5; margin:0}
+.lobby-warn{
+  color:var(--ink-soft); background:var(--surface);
+  border-left:3px solid var(--brass); border-radius:0 8px 8px 0;
+  padding:9px 11px;
+}
 
 .toast{
   position:fixed; left:50%; bottom:calc(18px + env(safe-area-inset-bottom));
@@ -556,6 +561,8 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     </div>
     <button class="btn btn-primary" id="joinBtn">Sätt dig</button>
     <p class="lobby-note" id="lobbyNote">Alla som öppnar länken med samma rumskod hamnar vid samma bord.</p>
+    <p class="lobby-note lobby-warn">Sitter ni två i samma rum? Stäng av mikrofonen
+    på den ena telefonen innan ni går in — annars tjuter det. Hörlurar fungerar också.</p>
   </div>
 </div>
 
@@ -1134,7 +1141,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   // Daily-rummet är statiskt: ingen nyckel i koden, ingen backend.
   // ---------------------------------------------------------------
   // Skapa ett rum på daily.co och klistra in dess adress här.
-  var DAILY_ROOM = "";
+  var DAILY_ROOM = "https://lellehubo.daily.co/Sportboll";
 
   var videoFrame = null;
 
@@ -1185,9 +1192,11 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     f.title = "Videosamtal";
     f.allow = "camera; microphone; autoplay; display-capture; fullscreen; speaker-selection";
     f.setAttribute("allowfullscreen", "true");
-    // Namnet följer med in i rummet så de andra ser vem som är vem.
-    f.src = url + (url.indexOf("?") === -1 ? "?" : "&")
-          + "userName=" + encodeURIComponent(state.name || "Gäst");
+    // Daily Prebuilt läser inte userName ur URL:en — namnet skrivs i
+    // deras egen förhandsruta i stället. Den rutan är dessutom stället
+    // där man stänger av mikrofonen innan man kliver in, vilket är just
+    // vad ni två i samma rum behöver göra.
+    f.src = url;
     f.addEventListener("load", function () { $("stageFallback").hidden = true; });
     f.addEventListener("error", function () {
       stageMessage("Videon kunde inte laddas.", "Försök igen",
