@@ -36,14 +36,21 @@ svar var värt. Appen visar bara det ni annars inte kan se hos varandra:
 ZWAP och BEZZERWIZZER hanterar ni med de fysiska brickorna och rösten,
 precis som när ni sitter i samma rum.
 
-## Två lägen
+## Som vid ett bord
 
-**Samtalet** är utgångsläget: videon fyller skärmen. Längst ner sitter ett
-handtag som visar var alla står på banan.
+Ni tittar på varandra, och ner på brädet när ni vill. Så är appen byggd:
 
-**Spelet** dras upp som ett blad över videon — brickor, kontroller, allas
-plattor. Videon ligger kvar bakom, så ni är tillbaka i samtalet så fort
-bladet stängs. Banan öppnas i sin tur som ett eget lager ovanpå bladet.
+- **Ansiktena fyller skärmen.** Det är utgångsläget och det enda läget
+  som behöver något aktivt för att lämnas.
+- **Din bricka ligger framför dig** — de fyra kategorierna syns längst
+  ner hela tiden, utan att du öppnar något. Som brickan på bordet.
+- **Sänk blicken** genom att dra upp bladet, eller trycka på greppet.
+  Där ligger allas plattor, kontrollerna och vägen till banan.
+- **Titta upp igen** genom att dra ner, eller bara röra ansiktena.
+  Videon har legat kvar bakom hela tiden.
+
+Banan öppnas i sin tur som ett eget lager, för de gånger ni verkligen
+vill se pjäserna mot varandra.
 
 ## Videon
 

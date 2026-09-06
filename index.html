@@ -93,20 +93,30 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   color:var(--brass); font-weight:700; font-size:14px;
 }
 
-/* Handtaget: enda spåret av spelet när ni bara pratar. */
+/* Handtaget bär din egen bricka. Vid ett bord ligger den framför dig —
+   du ska inte behöva öppna något för att se vad du la där. */
 .dock{
-  flex:none; display:flex; flex-direction:column; align-items:center; gap:3px;
-  width:100%; padding:7px 12px 8px; border-radius:12px;
-  border:1px solid var(--line-soft); background:var(--surface);
+  flex:none; display:flex; flex-direction:column; align-items:center; gap:5px;
+  width:100%; padding:6px 8px 8px; cursor:grab;
+  touch-action:none; user-select:none; -webkit-user-select:none;
 }
+.dock:active{cursor:grabbing}
 .dock-grip{
-  width:34px; height:4px; border-radius:2px; background:var(--line); flex:none;
+  width:36px; height:4px; border-radius:2px; background:var(--line); flex:none;
 }
-.dock-label{font-family:var(--display); font-weight:700; font-size:13.5px; color:var(--ink)}
-.dock-hint{
-  font-family:var(--mono); font-size:10px; color:var(--ink-faint);
-  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+.dock-plate{display:grid; grid-template-columns:repeat(4,1fr); gap:4px; width:100%}
+.dock-plate span{
+  position:relative; min-height:34px; padding:11px 3px 3px; border-radius:8px;
+  background:var(--surface); border:1px solid var(--line-soft);
+  font-size:10px; font-weight:600; line-height:1.1; color:var(--ink);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  overflow:hidden;
 }
+.dock-plate span::before{
+  content:attr(data-p); position:absolute; top:2px; left:0; right:0;
+  font-family:var(--mono); font-size:8.5px; color:var(--brass);
+}
+.dock-plate span.tom{background:transparent; border-style:dashed; color:var(--ink-faint); font-weight:500}
 
 /* ---------- Spelbladet ---------- */
 .sheet{
@@ -121,10 +131,12 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 }
 .sheet.open{transform:translateY(0)}
 .sheet-close{
-  flex:none; display:flex; flex-direction:column; align-items:center; gap:4px;
-  width:100%; padding:10px 12px 8px; border:none; background:transparent;
-  font-size:12px; font-weight:600; color:var(--ink-faint);
+  flex:none; display:flex; align-items:center; justify-content:center;
+  width:100%; padding:12px; border:none; background:transparent;
+  touch-action:none; cursor:grab;
 }
+.sheet-close:active{cursor:grabbing}
+.sheet.dragging{transition:none}
 .sheet-body{
   overflow-y:auto; padding:0 14px calc(14px + env(safe-area-inset-bottom));
   display:flex; flex-direction:column; gap:9px;
@@ -443,19 +455,18 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     </div>
   </div>
 
-  <button class="dock" id="sheetToggle" aria-expanded="false" aria-controls="sheet">
+  <div class="dock" id="sheetToggle" role="button" tabindex="0"
+       aria-expanded="false" aria-controls="sheet" aria-label="Din bricka — dra upp för hela bordet">
     <span class="dock-grip" aria-hidden="true"></span>
-    <span class="dock-label">Spelet</span>
-    <span class="dock-hint" id="dockHint"></span>
-  </button>
+    <div class="dock-plate" id="dockPlate"></div>
+  </div>
 </div>
 
 <!-- Spelet ligger som ett blad över videon: den fortsätter bakom, så
      ni är tillbaka i samtalet så fort bladet stängs. -->
 <section class="sheet" id="sheet" aria-label="Spelet">
-  <button class="sheet-close" id="sheetClose">
+  <button class="sheet-close" id="sheetClose" aria-label="Tillbaka till samtalet">
     <span class="dock-grip" aria-hidden="true"></span>
-    <span>Tillbaka till samtalet</span>
   </button>
 
   <div class="sheet-body">
@@ -693,21 +704,69 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       requestAnimationFrame(function () { renderPlate(); renderSeats(); });
     }
   }
-  $("sheetToggle").addEventListener("click", function () { setSheetOpen(true); });
-  $("sheetClose").addEventListener("click", function () { setSheetOpen(false); });
+  // Man drar inte upp en meny vid ett bord — man lutar sig fram. Så
+  // greppen tar emot en dragning, och blir ett tryck om man bara trycker.
+  var drag = null;
+
+  function sheetHeight() { return $("sheet").getBoundingClientRect().height || 1; }
+
+  function dragStart(e) {
+    drag = { y: e.clientY, moved: 0, from: sheetOpen() };
+    $("sheet").classList.add("dragging");
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+  }
+  function dragMove(e) {
+    if (!drag) return;
+    drag.moved = e.clientY - drag.y;
+    var h = sheetHeight();
+    // Från stängt räknas nedåt som noll, och tvärtom — bladet ska aldrig
+    // dras längre än till sina två lägen.
+    var offset = drag.from ? Math.max(0, drag.moved) : h + Math.min(0, drag.moved);
+    $("sheet").style.transform = "translateY(" + offset + "px)";
+  }
+  function dragEnd() {
+    if (!drag) return;
+    var h = sheetHeight(), moved = drag.moved, from = drag.from;
+    $("sheet").classList.remove("dragging");
+    $("sheet").style.transform = "";
+    // Kort rörelse = ett tryck: växla. Längre = dit man drog.
+    var open = Math.abs(moved) < 12 ? !from
+             : (from ? moved < h * 0.28 : -moved > 44);
+    setSheetOpen(open);
+    drag = null;
+  }
+
+  [$("sheetToggle"), $("sheetClose")].forEach(function (el) {
+    el.addEventListener("pointerdown", dragStart);
+    el.addEventListener("pointermove", dragMove);
+    el.addEventListener("pointerup", dragEnd);
+    el.addEventListener("pointercancel", dragEnd);
+  });
+  $("sheetToggle").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSheetOpen(!sheetOpen()); }
+  });
+
+  // Att titta upp igen görs genom att titta på ansiktena.
+  $("stage").addEventListener("click", function () {
+    if (sheetOpen() && !boardOpen()) setSheetOpen(false);
+  });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && sheetOpen() && !boardOpen()) setSheetOpen(false);
   });
 
-  // Handtaget bär det lilla man vill veta utan att öppna något.
+  // Din egen bricka ligger i handtaget, framför dig, hela tiden.
   function renderDock() {
-    var bits = [];
-    SEATS.forEach(function (s) {
-      var p = state.peers[s.key];
-      if (!p) return;
-      bits.push((p.name || "?").split(" ")[0] + " " + ((p.pos | 0) > 0 ? (p.pos | 0) : "start"));
-    });
-    $("dockHint").textContent = bits.join(" · ");
+    var el = $("dockPlate");
+    if (!el) return;
+    el.innerHTML = "";
+    for (var slot = 0; slot < 4; slot++) {
+      var sp = document.createElement("span");
+      sp.dataset.p = (slot + 1) + "p";
+      var cat = state.seat && state.tiles[slot] != null ? CATEGORIES[state.tiles[slot]] : null;
+      if (cat) sp.textContent = cat.split(" ")[0];
+      else { sp.textContent = "—"; sp.className = "tom"; }
+      el.appendChild(sp);
+    }
   }
 
   function setBoardOpen(open) {
@@ -867,7 +926,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
         state.tiles[slot] = i;
         closePicker();
         announce();
-        renderPlate(); renderSeats();
+        renderPlate(); renderSeats(); renderDock();
       });
       grid.appendChild(b);
     });
@@ -895,7 +954,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     state.tiles[slot] = t;
     pickedSlot = null;
     announce();
-    renderPlate(); renderSeats();
+    renderPlate(); renderSeats(); renderDock();
   });
 
   $("pickerClose").addEventListener("click", closePicker);
@@ -904,7 +963,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     state.tiles[pickerSlot] = null;
     closePicker();
     announce();
-    renderPlate(); renderSeats();
+    renderPlate(); renderSeats(); renderDock();
   });
 
   // ---------------------------------------------------------------
@@ -1402,7 +1461,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     });
     announce();
     logLine("<b>" + by + "</b> nollställde bordet.");
-    renderSeats(); renderPawns(); renderMine(); renderPlate();
+    renderSeats(); renderPawns(); renderMine(); renderPlate(); renderDock();
   }
 
   $("moveBtn").addEventListener("click", function () { move(state.step); });
@@ -1510,7 +1569,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     state.joined = true;
     state.peers[state.seat] = myPayload();
     buildBoard();
-    renderSeats(); renderMine(); renderPlate(); renderJam();
+    renderSeats(); renderMine(); renderPlate(); renderJam(); renderDock();
     requestAnimationFrame(renderPawns);
     connect();
     keepAwake();
