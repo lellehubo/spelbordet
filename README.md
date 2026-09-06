@@ -28,11 +28,22 @@ svar var värt. Appen visar bara det ni annars inte kan se hos varandra:
   ni valt. Plats 1 är värd 1 poäng, plats 4 är värd 4.
 - **Allas brickor** öppet, samtidigt, på varje telefon
 - **Pjäserna** på banan — du flyttar din egen, valfritt antal steg
+- **Videon** — alla fyra i bild medan ni spelar. Det är den appen
+  finns för; allt annat samsas om resten av skärmen.
 - **Vem som är där** just nu
 - En knackning på bordet, och en delad Spotify Jam-länk
 
 ZWAP och BEZZERWIZZER hanterar ni med de fysiska brickorna och rösten,
 precis som när ni sitter i samma rum.
+
+## Videon
+
+Jitsi Meet, inbäddad. Rumsnamnet härleds ur rumskoden i stället för att
+vara den, så bordet inte går att ramla in i på meet.jit.si genom att gissa.
+
+Egen WebRTC hade gett snyggare rutor, men fyra telefoner i två hushåll
+behöver ofta en TURN-server för att alls koppla upp — och det felet
+dyker upp precis när ni satt er för att spela.
 
 ## Teknik
 

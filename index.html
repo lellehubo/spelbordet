@@ -49,7 +49,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
 .app{
   max-width:520px; margin:0 auto; min-height:100svh;
-  display:flex; flex-direction:column; gap:10px;
+  display:flex; flex-direction:column; gap:8px;
   padding:0 14px calc(14px + env(safe-area-inset-bottom));
 }
 
@@ -68,6 +68,28 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   padding:8px 11px; font-size:13px; font-weight:600; color:var(--ink-soft);
 }
 .link-btn:active{background:var(--surface-2)}
+
+/* ---------- Videon ----------
+   Störst på skärmen, för det är den ni umgås genom. Allt annat får
+   samsas om resten. */
+.stage{
+  position:relative; width:100%; height:35vh; min-height:180px;
+  border-radius:var(--radius); overflow:hidden;
+  background:#04120C; border:1px solid var(--line-soft);
+  box-shadow:var(--shadow);
+}
+.stage iframe{width:100%; height:100%; border:0; display:block}
+.stage-fallback{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px; padding:16px;
+  text-align:center;
+}
+.stage-fallback p{margin:0; font-size:13px; color:var(--ink-faint); line-height:1.4; max-width:30ch}
+.stage-fallback button{
+  min-height:44px; padding:0 18px; border-radius:10px;
+  border:1.5px solid var(--brass); background:transparent;
+  color:var(--brass); font-weight:700; font-size:14px;
+}
 
 /* ---------- Jam ---------- */
 .jam{
@@ -92,17 +114,17 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 }
 
 /* ---------- Lagen ---------- */
-.seats{display:flex; flex-direction:column; gap:5px}
+.seats{display:flex; flex-direction:column; gap:4px}
 .seat{
   position:relative; background:var(--surface);
-  border:1px solid var(--line-soft); border-radius:11px;
-  padding:6px 9px; display:flex; align-items:center; gap:8px;
+  border:1px solid var(--line-soft); border-radius:10px;
+  padding:3px 8px; display:flex; align-items:center; gap:7px;
 }
 .seat.empty{background:transparent; border-style:dashed; border-color:var(--line); opacity:.7}
 .seat.me{border-color:var(--seat-color)}
 .seat.stale{opacity:.5}
 .seat-dot{
-  position:relative; width:26px; height:26px; border-radius:50%;
+  position:relative; width:24px; height:24px; border-radius:50%;
   background:var(--seat-color); flex:none; display:grid; place-items:center;
   font-family:var(--display); font-weight:700; font-size:13px; color:var(--on-player);
   box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);
@@ -124,7 +146,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .seat-pos{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); font-variant-numeric:tabular-nums}
 .mini{display:grid; grid-template-columns:repeat(4,1fr); gap:3px; flex:1; min-width:0}
 .mini span{
-  font-size:9.5px; line-height:1.15; padding:5px 3px; border-radius:5px;
+  font-size:9.5px; line-height:1.15; padding:4px 3px; border-radius:5px;
   background:var(--surface-2); color:var(--ink-soft); text-align:center;
   overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
 }
@@ -136,16 +158,40 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 }
 .knocking{animation:knock .38s ease}
 
+/* ---------- Banan ----------
+   Ihopfälld som standard: med videon störst finns ingen höjd över, och
+   var alla står syns ändå som text i lagraden. Fälls ut när ni vill se
+   pjäserna mot varandra. */
+.board-toggle{
+  display:flex; align-items:center; gap:6px; flex:none;
+  min-height:34px; padding:0 12px; border-radius:9px;
+  border:1px solid var(--line-soft); background:var(--surface);
+  font-size:12.5px; font-weight:600; color:var(--ink-soft); text-align:left;
+}
+.board-toggle i{font-style:normal; color:var(--ink-faint); transition:transform .2s}
+.board-toggle[aria-expanded="true"] i{transform:rotate(180deg)}
+.board-toggle[aria-expanded="true"]{border-color:var(--line); background:var(--surface-2)}
+
 /* ---------- Banan ---------- */
+/* Ett lager, inte en rad i flödet: med videon störst finns ingen höjd
+   att låna, och en liten inklämd ring är ingen spelplan. Så här får den
+   vara stor när ni tittar på den, och helt ur vägen annars. */
 .board-wrap{
-  position:relative; background:var(--sunk); border:1px solid #061710;
-  border-radius:var(--radius); padding:9px;
-  box-shadow:inset 0 2px 8px rgba(0,0,0,.45);
+  position:fixed; inset:0; z-index:15;
+  background:var(--bg);   /* solid: videons ljusa UI lyser igenom allt annat */
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; padding:20px;
+}
+.board-wrap .board{max-width:min(330px, 78vw, 52vh)}
+.board-close{
+  min-height:44px; padding:0 22px; border-radius:11px;
+  border:1px solid var(--line); background:var(--surface);
+  color:var(--ink); font-weight:700; font-size:14.5px;
 }
 .board{
   position:relative; display:grid;
   grid-template-columns:repeat(6,1fr); grid-template-rows:repeat(6,1fr);
-  gap:3px; aspect-ratio:1; max-width:min(280px, 24vh); margin:0 auto;
+  gap:3px; aspect-ratio:1; max-width:min(230px, 17vh); margin:0 auto;
 }
 .cell{
   border-radius:7px; background:rgba(255,255,255,.022);
@@ -184,7 +230,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 /* ---------- Flödet ---------- */
 .feed{
   background:transparent; border:none; padding:0 4px;
-  min-height:20px; max-height:38px; overflow-y:auto;
+  min-height:0; max-height:20px; overflow-y:auto;
   display:flex; flex-direction:column; gap:4px;
 }
 .feed p{margin:0; font-size:12.5px; color:var(--ink-soft)}
@@ -269,7 +315,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 .btn-primary{flex:1; background:var(--my-color,var(--ink)); border-color:transparent; color:var(--on-player); font-weight:700}
 .btn-ghost{flex:none; width:52px; font-size:19px; padding:13px 0}
 
-.mine-foot{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.mine-foot{display:flex; align-items:center; justify-content:space-between; gap:8px}
 .conn{display:flex; align-items:center; gap:5px; font-family:var(--mono); font-size:11px; color:var(--ink-faint)}
 .conn i{width:6px; height:6px; border-radius:50%; background:var(--ink-faint); display:block; flex:none}
 .conn.up i{background:var(--p1)}
@@ -343,21 +389,29 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   <div class="top">
     <div class="wordmark">Spel<span>bordet</span></div>
     <div class="roomchip">rum <b id="roomLabel">—</b></div>
+    <button class="link-btn" id="jamToggle" aria-label="Musik">&#9834;</button>
     <button class="link-btn" id="shareBtn">Dela</button>
     <button class="link-btn" id="leaveBtn">Lämna</button>
   </div>
 
-  <div class="jam" id="jamBar">
+  <div class="stage" id="stage">
+    <div class="stage-fallback" id="stageFallback">
+      <p>Startar videon…</p>
+    </div>
+  </div>
+
+  <div class="jam" id="jamBar" hidden>
     <span class="jam-icon" aria-hidden="true">&#9834;</span>
     <div class="jam-body" id="jamBody"></div>
   </div>
 
   <div class="seats" id="seats"></div>
 
-  <div class="board-wrap" id="boardWrap">
+  <div class="board-wrap" id="boardWrap" hidden>
     <h2 class="sr-only">Banan</h2>
     <div class="board" id="board"></div>
     <div class="pawns" id="pawns"></div>
+    <button class="board-close" id="boardClose">Stäng banan</button>
   </div>
 
   <div class="feed" id="feed"></div>
@@ -403,7 +457,10 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
 
     <div class="mine-foot">
       <div class="conn" id="conn"><i></i><span>ansluter…</span></div>
-      <button class="reset-btn" id="resetBtn">Nollställ bordet</button>
+      <button class="board-toggle" id="boardToggle" aria-expanded="false" aria-controls="boardWrap">
+        <span>Banan</span><i aria-hidden="true">▾</i>
+      </button>
+      <button class="reset-btn" id="resetBtn">Nollställ</button>
     </div>
   </section>
 </div>
@@ -563,8 +620,33 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     return { x: cx + ox - 11, y: cy + oy - 11 };
   }
 
+  function boardOpen() { return !$("boardWrap").hidden; }
+
+  // Positionerna står i varje lagrad, så knappen behöver ingen egen
+  // sammanfattning — den skulle bara ta höjd från lagraderna.
+  function renderBoardSummary() {}
+
+  function setBoardOpen(open) {
+    $("boardWrap").hidden = !open;
+    $("boardToggle").setAttribute("aria-expanded", String(open));
+    if (open) {
+      // Rects finns först när lagret faktiskt ritats.
+      requestAnimationFrame(function () { requestAnimationFrame(function () { renderPawns(); }); });
+    }
+  }
+  $("boardToggle").addEventListener("click", function () { setBoardOpen(!boardOpen()); });
+  $("boardClose").addEventListener("click", function () { setBoardOpen(false); });
+  $("boardWrap").addEventListener("click", function (e) {
+    if (e.target === this) setBoardOpen(false);   // klick utanför brädet
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && boardOpen()) setBoardOpen(false);
+  });
+
   var pawnEls = {};
   function renderPawns(bumpSeat) {
+    renderBoardSummary();
+    if (!boardOpen()) return;   // rects är meningslösa när banan är dold
     var byCell = {};
     SEATS.forEach(function (s) {
       var p = state.peers[s.key];
@@ -574,15 +656,19 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     });
     SEATS.forEach(function (s) {
       var p = state.peers[s.key];
-      var el = pawnEls[s.key];
+      var el = pawnEls[s.key], nyss = false;
       if (!p) { if (el) { el.remove(); delete pawnEls[s.key]; } return; }
       if (!el) {
         el = document.createElement("div");
         el.className = "pawn";
         el.dataset.seat = s.key;
         el.style.setProperty("--pawn-color", "var(" + s.varName + ")");
+        // Utan detta startar en transition i ett subträd som just varit
+        // dolt, fastnar på currentTime 0 och håller pjäsen kvar i hörnet.
+        el.style.transition = "none";
         pawnsEl.appendChild(el);
         pawnEls[s.key] = el;
+        nyss = true;
       }
       el.textContent = (p.name || "?").charAt(0).toUpperCase();
       el.classList.toggle("is-me", s.key === state.seat);
@@ -591,6 +677,10 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
       var xy = pawnXY(idx, group.length, group.indexOf(s.key));
       el.style.transform = "translate(" + xy.x + "px," + xy.y + "px)";
       el.style.opacity = idx === 0 ? "0.7" : "1";
+      if (nyss) {
+        void el.offsetWidth;      // lås in utgångsläget
+        el.style.transition = "";  // och släpp på glidningen igen
+      }
       if (bumpSeat === s.key) {
         el.classList.remove("moved"); void el.offsetWidth; el.classList.add("moved");
       }
@@ -808,6 +898,113 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   }
 
   // ---------------------------------------------------------------
+  // Videon — Jitsi Meet i en iframe.
+  //
+  // Egen WebRTC hade gett snyggare rutor, men fyra telefoner i två
+  // hushåll behöver ofta en TURN-server för att ens koppla upp, och
+  // det felet dyker upp precis när ni satt er. Jitsi har löst det.
+  // ---------------------------------------------------------------
+  var jitsi = null, jitsiTried = false;
+
+  // Rumsnamnet är öppet för vem som helst som gissar det på meet.jit.si,
+  // så det härleds ur rumskoden i stället för att vara den.
+  function jitsiRoomName(code) {
+    var h = 2166136261, s = "spelbordet:" + code;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+    var h2 = 5381;
+    for (var j = s.length - 1; j >= 0; j--) { h2 = ((h2 * 33) ^ s.charCodeAt(j)) >>> 0; }
+    return "spelbordet-" + code.toLowerCase() + "-" + h.toString(36) + h2.toString(36);
+  }
+
+  function stageMessage(text, btnText, onClick) {
+    var f = $("stageFallback");
+    if (!f) return;
+    f.hidden = false;
+    f.innerHTML = "";
+    var p = document.createElement("p");
+    p.textContent = text;
+    f.appendChild(p);
+    if (btnText) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = btnText;
+      b.addEventListener("click", onClick);
+      f.appendChild(b);
+    }
+  }
+
+  function startVideo() {
+    if (jitsi || jitsiTried) return;
+    jitsiTried = true;
+    stageMessage("Startar videon…");
+
+    var script = document.createElement("script");
+    script.src = "https://meet.jit.si/external_api.js";
+    script.async = true;
+    script.onerror = function () {
+      stageMessage("Videon kunde inte laddas. Ni kan spela ändå — eller försöka igen.",
+        "Försök igen", function () { jitsiTried = false; jitsi = null; startVideo(); });
+    };
+    script.onload = function () {
+      if (typeof window.JitsiMeetExternalAPI !== "function") {
+        stageMessage("Videon kunde inte startas.", "Försök igen",
+          function () { jitsiTried = false; startVideo(); });
+        return;
+      }
+      try {
+        jitsi = new window.JitsiMeetExternalAPI("meet.jit.si", {
+          roomName: jitsiRoomName(state.room),
+          parentNode: $("stage"),
+          userInfo: { displayName: state.name },
+          configOverwrite: {
+            prejoinPageEnabled: false,      // ni är redan vid bordet
+            disableDeepLinking: true,       // stanna i webbläsaren
+            startWithAudioMuted: false,
+            startWithVideoMuted: false,
+            disableModeratorIndicator: true,
+            disableReactions: true,
+            toolbarButtons: ["microphone", "camera", "tileview", "hangup"]
+          },
+          interfaceConfigOverwrite: {
+            TILE_VIEW_MAX_COLUMNS: 2,       // fyra rutor i ett 2x2
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false,
+            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+            MOBILE_APP_PROMO: false,
+            DEFAULT_BACKGROUND: "#04120C"
+          }
+        });
+        jitsi.addListener("videoConferenceJoined", function () {
+          $("stageFallback").hidden = true;
+          try { jitsi.executeCommand("setTileView", true); } catch (e) {}
+        });
+        // Kliv undan även om anslutningen dröjer eller kameran nekas —
+        // Jitsi förklarar sådant bättre i sitt eget gränssnitt än min
+        // overlay gör genom att ligga kvar ovanpå det.
+        setTimeout(function () {
+          if (jitsi) $("stageFallback").hidden = true;
+        }, 2500);
+        jitsi.addListener("readyToClose", function () {
+          stopVideo();
+          stageMessage("Du lämnade videon.", "Anslut igen",
+            function () { jitsiTried = false; startVideo(); });
+        });
+      } catch (e) {
+        stageMessage("Videon kunde inte startas: " + (e && e.message ? e.message : "okänt fel"),
+          "Försök igen", function () { jitsiTried = false; jitsi = null; startVideo(); });
+      }
+    };
+    document.head.appendChild(script);
+  }
+
+  function stopVideo() {
+    if (!jitsi) return;
+    try { jitsi.dispose(); } catch (e) {}
+    jitsi = null;
+    jitsiTried = false;
+  }
+
+  // ---------------------------------------------------------------
   // Spotify Jam — appen delar länken, Spotify sköter musiken
   // ---------------------------------------------------------------
   var jamEditing = false;
@@ -842,10 +1039,23 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     return best;
   }
 
+  var jamOpen = false;   // remsan syns när musik spelas, eller på begäran
+
+  $("jamToggle").addEventListener("click", function () {
+    jamOpen = !jamOpen;
+    if (!jamOpen) jamEditing = false;
+    renderJam();
+  });
+
   function renderJam() {
     var body = $("jamBody");
     body.innerHTML = "";
     var jam = liveJam();
+    // Tar ingen höjd när det inte är någon musik igång — med videon
+    // störst finns ingen plats att stå och säga "ingen musik".
+    $("jamBar").hidden = !(jam || jamOpen || jamEditing);
+    $("jamToggle").style.color = jam ? "var(--spotify)" : "";
+    if ($("jamBar").hidden) return;
 
     if (jamEditing) {
       var input = document.createElement("input");
@@ -1128,6 +1338,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
   });
   $("rejoinBtn").addEventListener("click", function () { location.reload(); });
   $("leaveBtn").addEventListener("click", function () {
+    stopVideo();
     clearState();
     if (state.channel) {
       state.channel.send({ type: "broadcast", event: "bye", payload: { peer: peerId } });
@@ -1219,6 +1430,7 @@ h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
     requestAnimationFrame(renderPawns);
     connect();
     keepAwake();
+    startVideo();
     saveState();
   }
 
